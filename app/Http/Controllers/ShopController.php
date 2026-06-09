@@ -44,23 +44,54 @@ class ShopController extends Controller
 }
 
     // Masuk Keranjang Belanja
-    public function addToCart($id) {
-        $product = DB::table('products')->where('id', $id)->first();
-        if (!$product || $product->stock < 1) return back()->with('error', 'Stok habis!');
+    public function addToCart(Request $request, $id)
+{
+    $product = DB::table('products')->where('id', $id)->first();
 
-        $existing = DB::table('carts')->where('user_id', Auth::id())->where('product_id', $id)->first();
-        if ($existing) {
-            DB::table('carts')->where('id', $existing->id)->increment('quantity');
-        } else {
-            DB::table('carts')->insert([
-                'user_id' => Auth::id(),
-                'product_id' => $id,
-                'quantity' => 1,
-                'created_at' => now()
-            ]);
-        }
-        return back()->with('success', 'Berhasil ditambah ke keranjang!');
+    if (!$product) {
+        return back()->with('error', 'Produk tidak ditemukan!');
     }
+
+    if ($product->stock < 1) {
+        return back()->with('error', 'Stok habis!');
+    }
+
+    $request->validate([
+        'quantity' => 'required|integer|min:1|max:' . $product->stock,
+    ]);
+
+    $quantity = (int) $request->quantity;
+
+    $existing = DB::table('carts')
+        ->where('user_id', Auth::id())
+        ->where('product_id', $id)
+        ->first();
+
+    if ($existing) {
+        $newQuantity = $existing->quantity + $quantity;
+
+        if ($newQuantity > $product->stock) {
+            return back()->with('error', 'Jumlah produk di keranjang melebihi stok yang tersedia!');
+        }
+
+        DB::table('carts')
+            ->where('id', $existing->id)
+            ->update([
+                'quantity' => $newQuantity,
+                'updated_at' => now(),
+            ]);
+    } else {
+        DB::table('carts')->insert([
+            'user_id' => Auth::id(),
+            'product_id' => $id,
+            'quantity' => $quantity,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    return back()->with('success', 'Berhasil ditambah ke keranjang!');
+}
 
     // Lihat Keranjang
     public function viewCart() {
@@ -79,12 +110,22 @@ class ShopController extends Controller
 
         $totalPrice = 0;
         foreach ($items as $item) {
-            $product = DB::table('products')->where('id', $item->product_id)->first();
-            $totalPrice += ($product->price * $item->quantity);
-            
-            // Potong Stok
-            DB::table('products')->where('id', $item->product_id)->decrement('stock', $item->quantity);
-        }
+    $product = DB::table('products')->where('id', $item->product_id)->first();
+
+    if (!$product) {
+        return back()->with('error', 'Ada produk yang tidak ditemukan.');
+    }
+
+    if ($item->quantity > $product->stock) {
+        return back()->with('error', 'Stok produk "' . $product->name . '" tidak mencukupi.');
+    }
+
+    $totalPrice += ($product->price * $item->quantity);
+
+    DB::table('products')
+        ->where('id', $item->product_id)
+        ->decrement('stock', $item->quantity);
+}
 
         // Simpan ke tabel Order
         $orderId = DB::table('orders')->insertGetId([

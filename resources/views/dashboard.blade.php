@@ -348,17 +348,45 @@
                                                 </div>
                                             </div>
 
-                                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                                                @csrf
+          <form action="{{ route('cart.add', $product->id) }}" method="POST">
+    @csrf
 
-                                                <button 
-                                                    type="submit"
-                                                    class="w-full rounded-2xl px-4 py-3 text-sm font-extrabold text-white shadow-sm transition
-                                                        {{ $product->stock < 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600' }}"
-                                                    {{ $product->stock < 1 ? 'disabled' : '' }}>
-                                                    {{ $product->stock < 1 ? 'Stok Habis' : '🛒 Tambah ke Keranjang' }}
-                                                </button>
-                                            </form>
+    @if($product->stock < 1)
+        <button 
+            type="button"
+            disabled
+            class="w-full rounded-2xl px-4 py-3 text-sm font-extrabold text-white shadow-sm bg-gray-300 cursor-not-allowed"
+        >
+            Stok Habis
+        </button>
+    @else
+        <div class="flex items-center justify-between gap-3 mb-3">
+            <label 
+                for="quantity-{{ $product->id }}" 
+                class="text-sm font-bold text-gray-700"
+            >
+                Jumlah
+            </label>
+
+            <input
+                type="number"
+                id="quantity-{{ $product->id }}"
+                name="quantity"
+                value="1"
+                min="1"
+                max="{{ $product->stock }}"
+                class="w-24 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-center text-sm font-bold text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-200 outline-none"
+            >
+        </div>
+
+        <button 
+            type="submit"
+            class="w-full rounded-2xl px-4 py-3 text-sm font-extrabold text-white shadow-sm transition bg-orange-500 hover:bg-orange-600"
+        >
+            🛒 Tambah ke Keranjang
+        </button>
+    @endif
+</form>
                                         </div>
                                     </div>
 
