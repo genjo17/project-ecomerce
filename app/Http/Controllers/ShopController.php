@@ -93,16 +93,93 @@ class ShopController extends Controller
     return back()->with('success', 'Berhasil ditambah ke keranjang!');
 }
 
-    // Lihat Keranjang
-    public function viewCart() {
-        $items = DB::table('carts')
-            ->join('products', 'carts.product_id', '=', 'products.id')
-            ->where('carts.user_id', Auth::id())
-            ->select('carts.*', 'products.name', 'products.price', 'products.stock')
-            ->get();
-        return view('cart', compact('items'));
+   
+// Lihat Keranjang
+public function viewCart()
+{
+    $items = DB::table('carts')
+        ->join('products', 'carts.product_id', '=', 'products.id')
+        ->where('carts.user_id', Auth::id())
+        ->select(
+            'carts.*',
+            'products.name',
+            'products.price',
+            'products.stock',
+            'products.image_url as image'
+        )
+        ->get();
+
+    return view('cart', compact('items'));
+}
+// Update Jumlah Produk di Keranjang
+public function updateCart(Request $request, $id)
+{
+    $cart = DB::table('carts')
+        ->where('id', $id)
+        ->where('user_id', Auth::id())
+        ->first();
+
+    if (!$cart) {
+        return back()->with('error', 'Item keranjang tidak ditemukan.');
     }
 
+    $product = DB::table('products')
+        ->where('id', $cart->product_id)
+        ->first();
+
+    if (!$product) {
+        return back()->with('error', 'Produk tidak ditemukan.');
+    }
+
+    $action = $request->input('action');
+    $quantity = (int) $cart->quantity;
+
+    if ($action === 'increase') {
+        $quantity++;
+    } elseif ($action === 'decrease') {
+        $quantity--;
+    } else {
+        $quantity = (int) $request->input('quantity', $quantity);
+    }
+
+    if ($quantity < 1) {
+        return back()->with('error', 'Jumlah produk minimal 1.');
+    }
+
+    if ($quantity > $product->stock) {
+        return back()->with('error', 'Jumlah produk melebihi stok yang tersedia.');
+    }
+
+    DB::table('carts')
+        ->where('id', $id)
+        ->where('user_id', Auth::id())
+        ->update([
+            'quantity' => $quantity,
+            'updated_at' => now(),
+        ]);
+
+    return back()->with('success', 'Jumlah produk berhasil diperbarui.');
+}
+
+// Hapus Produk dari Keranjang
+public function removeFromCart($id)
+{
+    $cart = DB::table('carts')
+        ->where('id', $id)
+        ->where('user_id', Auth::id())
+        ->first();
+
+    if (!$cart) {
+        return back()->with('error', 'Item keranjang tidak ditemukan.');
+    }
+
+    DB::table('carts')
+        ->where('id', $id)
+        ->where('user_id', Auth::id())
+        ->delete();
+
+    return back()->with('success', 'Produk berhasil dihapus dari keranjang.');
+}
     // Proses Checkout
     public function checkout(Request $request) {
         $items = DB::table('carts')->where('user_id', Auth::id())->get();

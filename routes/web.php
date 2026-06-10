@@ -71,6 +71,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cart', [ShopController::class, 'viewCart'])->name('cart.view');
     Route::post('/checkout', [ShopController::class, 'checkout'])->name('checkout');
     Route::get('/orders', [ShopController::class, 'orderHistory'])->name('orders.history');
+    Route::patch('/cart/{id}/update', [ShopController::class, 'updateCart'])->name('cart.update');
+     Route::delete('/cart/{id}/remove', [ShopController::class, 'removeFromCart'])->name('cart.remove');
 
     // MODUL ADMIN
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
