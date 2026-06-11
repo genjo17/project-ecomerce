@@ -14,15 +14,19 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+    <body class="font-sans text-slate-900 antialiased">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center px-4 pt-6 sm:pt-0 bg-slate-50">
+            <div class="text-center border-t-4 border-t-blue-950 pt-6 sm:pt-0">
+                <a href="/" class="inline-flex items-center gap-3">
+                    <span class="brand-mark h-12 w-12">SB</span>
+                    <span class="text-left">
+                        <span class="block text-lg font-black tracking-wide text-slate-950">SABISHOP</span>
+                        <span class="block text-xs font-medium text-slate-500">Platform belanja online terpercaya</span>
+                    </span>
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="panel mt-6 w-full overflow-hidden px-6 py-6 sm:max-w-md">
                 {{ $slot }}
             </div>
         </div>

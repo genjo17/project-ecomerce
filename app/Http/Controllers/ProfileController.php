@@ -16,8 +16,13 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user()->load([
+            'addresses' => fn ($query) => $query->orderByDesc('is_default')->orderByDesc('updated_at'),
+        ]);
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'addresses' => $user->addresses,
         ]);
     }
 

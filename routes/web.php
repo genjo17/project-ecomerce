@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +72,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cart', [ShopController::class, 'viewCart'])->name('cart.view');
     Route::post('/checkout', [ShopController::class, 'checkout'])->name('checkout');
     Route::get('/orders', [ShopController::class, 'orderHistory'])->name('orders.history');
+    Route::patch('/cart/{id}/update', [ShopController::class, 'updateCart'])->name('cart.update');
+     Route::delete('/cart/{id}/remove', [ShopController::class, 'removeFromCart'])->name('cart.remove');
 
     // MODUL ADMIN
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
@@ -88,6 +91,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::post('/profile/addresses', [AddressController::class, 'store'])->name('profile.addresses.store');
+    Route::patch('/profile/addresses/{address}', [AddressController::class, 'update'])->name('profile.addresses.update');
+    Route::delete('/profile/addresses/{address}', [AddressController::class, 'destroy'])->name('profile.addresses.destroy');
+    Route::patch('/profile/addresses/{address}/default', [AddressController::class, 'setDefault'])->name('profile.addresses.default');
 });
 
 require __DIR__.'/auth.php';

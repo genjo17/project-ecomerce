@@ -3,7 +3,7 @@
         <div class="bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-sm">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <p class="text-sm font-bold text-orange-600 uppercase tracking-wider">
+                    <p class="text-sm font-bold text-blue-600 uppercase tracking-wider">
                         Laporan Penjualan
                     </p>
                     <h2 class="font-extrabold text-2xl text-gray-900 leading-tight">
@@ -16,7 +16,7 @@
 
                 <div class="flex flex-col sm:flex-row gap-3">
                     <a href="{{ route('admin.dashboard') }}"
-                       class="inline-flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold py-3 px-5 rounded-xl transition">
+                       class="btn-secondary inline-flex items-center justify-center px-5 py-3 text-sm">
                         ⬅️ Kembali ke Admin
                     </a>
 
@@ -25,7 +25,7 @@
                             'end_date' => $endDate,
                             'status' => $status
                         ]) }}"
-                       class="inline-flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold py-3 px-5 rounded-xl transition">
+                       class="btn-primary inline-flex items-center justify-center px-5 py-3 text-sm">
                         ⬇️ Export CSV
                     </a>
                 </div>
@@ -46,7 +46,7 @@
                         <input type="date"
                                name="start_date"
                                value="{{ $startDate }}"
-                               class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                               class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                     </div>
 
                     <div>
@@ -56,7 +56,7 @@
                         <input type="date"
                                name="end_date"
                                value="{{ $endDate }}"
-                               class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                               class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                     </div>
 
                     <div>
@@ -64,7 +64,7 @@
                             Status Pesanan
                         </label>
                         <select name="status"
-                                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                             <option value="">Semua Status</option>
                             @foreach($statuses as $item)
                                 <option value="{{ $item }}" {{ $status == $item ? 'selected' : '' }}>
@@ -76,12 +76,12 @@
 
                     <div class="flex gap-3">
                         <button type="submit"
-                                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 rounded-xl transition">
+                                class="btn-primary w-full py-3">
                             Tampilkan
                         </button>
 
                         <a href="{{ route('admin.reports') }}"
-                           class="w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold py-3 rounded-xl transition">
+                           class="btn-secondary w-full text-center py-3">
                             Reset
                         </a>
                     </div>
@@ -111,7 +111,7 @@
                 </div>
 
                 <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-                    <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mb-4">
                         📊
                     </div>
                     <p class="text-sm text-gray-500">Rata-rata Pesanan</p>
@@ -185,7 +185,7 @@
                                         </div>
 
                                         <div class="w-full h-4 bg-gray-100 rounded-full overflow-hidden">
-                                            <div class="h-full bg-orange-500 rounded-full"
+                                            <div class="h-full bg-blue-950 rounded-full"
                                                  style="width: {{ $percentage }}%">
                                             </div>
                                         </div>
@@ -214,6 +214,7 @@
                                         <th class="text-left px-6 py-4 font-bold">Pembeli</th>
                                         <th class="text-left px-6 py-4 font-bold">Tanggal</th>
                                         <th class="text-left px-6 py-4 font-bold">Status</th>
+                                        <th class="text-right px-6 py-4 font-bold">Ongkir</th>
                                         <th class="text-right px-6 py-4 font-bold">Total</th>
                                     </tr>
                                 </thead>
@@ -230,17 +231,20 @@
                                                 {{ \Carbon\Carbon::parse($order->created_at)->format('d M Y H:i') }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                <span class="inline-flex bg-orange-50 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">
+                                                <span class="inline-flex bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
                                                     {{ $order->status }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 text-right font-extrabold text-orange-600">
+                                            <td class="px-6 py-4 text-right font-bold text-gray-600">
+                                                Rp {{ number_format((float) ($order->shipping_cost ?? 0), 0, ',', '.') }}
+                                            </td>
+                                            <td class="px-6 py-4 text-right font-extrabold text-blue-600">
                                                 Rp {{ number_format((float) $order->total_price, 0, ',', '.') }}
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                                                 Belum ada transaksi pada periode ini.
                                             </td>
                                         </tr>
@@ -275,7 +279,7 @@
                                             {{ $row->total_orders }} pesanan
                                         </p>
                                     </div>
-                                    <p class="font-extrabold text-orange-600">
+                                    <p class="font-extrabold text-blue-600">
                                         Rp {{ number_format((float) $row->total_sales, 0, ',', '.') }}
                                     </p>
                                 </div>

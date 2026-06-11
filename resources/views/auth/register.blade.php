@@ -7,81 +7,70 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-gray-50 text-gray-800">
-
-    <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
-
-        <!-- LEFT BRAND SECTION -->
-        <section class="hidden lg:flex flex-col justify-between bg-gradient-to-br from-orange-500 to-amber-500 p-12 text-white relative overflow-hidden">
-
-            <div class="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full"></div>
-            <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-white/10 rounded-full"></div>
-            <div class="absolute right-12 bottom-20 text-9xl opacity-20 select-none">🛍️</div>
-
-            <a href="{{ route('login') }}" class="relative z-10 flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl">
-                    🛒
-                </div>
-                <div>
-                    <h1 class="text-2xl font-extrabold tracking-wide">SABISHOP</h1>
-                    <p class="text-sm text-orange-50">Belanja mudah, aman, dan terpercaya</p>
-                </div>
+<body class="bg-slate-50 text-slate-800">
+    <header class="sticky top-0 z-50 border-b border-slate-200 border-t-4 border-t-blue-950 bg-white/95 backdrop-blur">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+            <a href="{{ route('beranda') }}" class="flex items-center gap-3">
+                <span class="brand-mark">SB</span>
+                <span class="hidden sm:block">
+                    <span class="block text-sm font-black tracking-wide text-slate-950">SABISHOP</span>
+                    <span class="block text-xs font-medium text-slate-500">Platform belanja online terpercaya</span>
+                </span>
             </a>
 
-            <div class="relative z-10 max-w-lg">
-                <span class="inline-block bg-white/20 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider mb-5">
-                    Akun Baru
-                </span>
+            <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
+                <a href="{{ route('beranda') }}" class="transition hover:text-blue-900">Beranda</a>
+                <a href="{{ route('produk.public') }}" class="transition hover:text-blue-900">Produk</a>
+                <a href="{{ route('bantuan') }}" class="transition hover:text-blue-900">Bantuan</a>
+            </nav>
+        </div>
+    </header>
 
-                <h2 class="text-4xl font-extrabold leading-tight mb-4">
-                    Daftar dan mulai belanja lebih mudah
-                </h2>
-
-                <p class="text-orange-50 leading-relaxed">
-                    Buat akun untuk menyimpan data belanja, melihat riwayat pesanan,
-                    dan menambahkan produk ke keranjang dengan cepat.
-                </p>
-            </div>
-
-            <div class="relative z-10 grid grid-cols-3 gap-3 text-center">
-                <div class="bg-white/15 rounded-2xl p-4">
-                    <p class="text-2xl">🛒</p>
-                    <p class="text-xs mt-1">Belanja</p>
+    <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+            <section class="panel hidden flex-col justify-between bg-blue-950 p-8 text-white lg:flex">
+                <div class="overflow-hidden rounded-2xl border border-white/10">
+                    <img
+                        src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1200&auto=format&fit=crop"
+                        alt="Belanja online"
+                        class="h-64 w-full object-cover"
+                    >
                 </div>
 
-                <div class="bg-white/15 rounded-2xl p-4">
-                    <p class="text-2xl">📦</p>
-                    <p class="text-xs mt-1">Pesanan</p>
+                <div class="mt-8">
+                    <p class="text-xs font-bold uppercase tracking-[0.22em] text-blue-100">Akun Baru</p>
+                    <h1 class="mt-3 text-4xl font-black leading-tight">
+                        Daftar dan mulai belanja lebih mudah.
+                    </h1>
+                    <p class="mt-4 max-w-lg text-sm leading-7 text-blue-100">
+                        Buat akun untuk menyimpan data belanja, melihat riwayat pesanan, dan menambahkan produk ke keranjang dengan cepat.
+                    </p>
                 </div>
 
-                <div class="bg-white/15 rounded-2xl p-4">
-                    <p class="text-2xl">🔒</p>
-                    <p class="text-xs mt-1">Aman</p>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- FORM SECTION -->
-        <section class="flex items-center justify-center px-6 py-10">
-            <div class="w-full max-w-md">
-
-                <!-- MOBILE BRAND -->
-                <div class="lg:hidden mb-8 text-center">
-                    <div class="mx-auto w-14 h-14 rounded-2xl bg-orange-500 flex items-center justify-center text-white text-2xl mb-3">
-                        🛒
+                <div class="mt-8 grid grid-cols-3 gap-3">
+                    <div class="rounded-2xl bg-white/10 p-4">
+                        <p class="text-sm font-black">Belanja</p>
+                        <p class="mt-1 text-xs text-blue-100">Lebih praktis.</p>
                     </div>
-                    <h1 class="text-2xl font-extrabold text-gray-900">SABISHOP</h1>
-                    <p class="text-sm text-gray-500">Belanja mudah, aman, dan terpercaya</p>
+                    <div class="rounded-2xl bg-white/10 p-4">
+                        <p class="text-sm font-black">Pesanan</p>
+                        <p class="mt-1 text-xs text-blue-100">Mudah dipantau.</p>
+                    </div>
+                    <div class="rounded-2xl bg-white/10 p-4">
+                        <p class="text-sm font-black">Aman</p>
+                        <p class="mt-1 text-xs text-blue-100">Data terlindungi.</p>
+                    </div>
                 </div>
+            </section>
 
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-xl p-8">
-
-                    <div class="mb-7">
-                        <h2 class="text-3xl font-extrabold text-gray-900 mb-2">
+            <section class="panel flex items-center p-8 sm:p-10">
+                <div class="w-full max-w-md mx-auto">
+                    <div class="mb-8">
+                        <p class="text-xs font-bold uppercase tracking-[0.22em] text-blue-900">Daftar</p>
+                        <h2 class="mt-3 text-3xl font-black text-slate-950">
                             Buat Akun
                         </h2>
-                        <p class="text-sm text-gray-500">
+                        <p class="mt-3 text-sm leading-7 text-slate-500">
                             Daftar untuk mulai menggunakan layanan SABISHOP.
                         </p>
                     </div>
@@ -89,13 +78,12 @@
                     <form method="POST" action="{{ route('register') }}" class="space-y-5">
                         @csrf
 
-                        <!-- NAME -->
                         <div>
-                            <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="name" class="mb-2 block text-sm font-semibold text-slate-700">
                                 Nama Lengkap
                             </label>
 
-                            <input 
+                            <input
                                 id="name"
                                 type="text"
                                 name="name"
@@ -104,19 +92,18 @@
                                 autofocus
                                 autocomplete="name"
                                 placeholder="Masukkan nama lengkap"
-                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-800 placeholder-gray-400 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition"
+                                class="form-field w-full border-slate-200 bg-slate-50 px-4 py-3"
                             >
 
-                            <x-input-error :messages="$errors->get('name')" class="mt-2 text-red-500 text-sm" />
+                            <x-input-error :messages="$errors->get('name')" class="mt-2 text-sm text-red-500" />
                         </div>
 
-                        <!-- EMAIL -->
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="email" class="mb-2 block text-sm font-semibold text-slate-700">
                                 Email
                             </label>
 
-                            <input 
+                            <input
                                 id="email"
                                 type="email"
                                 name="email"
@@ -124,74 +111,66 @@
                                 required
                                 autocomplete="username"
                                 placeholder="Masukkan email aktif"
-                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-800 placeholder-gray-400 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition"
+                                class="form-field w-full border-slate-200 bg-slate-50 px-4 py-3"
                             >
 
-                            <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-500 text-sm" />
+                            <x-input-error :messages="$errors->get('email')" class="mt-2 text-sm text-red-500" />
                         </div>
 
-                        <!-- PASSWORD -->
                         <div>
-                            <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="password" class="mb-2 block text-sm font-semibold text-slate-700">
                                 Password
                             </label>
 
-                            <input 
+                            <input
                                 id="password"
                                 type="password"
                                 name="password"
                                 required
                                 autocomplete="new-password"
                                 placeholder="Buat password"
-                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-800 placeholder-gray-400 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition"
+                                class="form-field w-full border-slate-200 bg-slate-50 px-4 py-3"
                             >
 
-                            <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-500 text-sm" />
+                            <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-500" />
                         </div>
 
-                        <!-- CONFIRM PASSWORD -->
                         <div>
-                            <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="password_confirmation" class="mb-2 block text-sm font-semibold text-slate-700">
                                 Konfirmasi Password
                             </label>
 
-                            <input 
+                            <input
                                 id="password_confirmation"
                                 type="password"
                                 name="password_confirmation"
                                 required
                                 autocomplete="new-password"
                                 placeholder="Ulangi password"
-                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-800 placeholder-gray-400 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition"
+                                class="form-field w-full border-slate-200 bg-slate-50 px-4 py-3"
                             >
 
-                            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-red-500 text-sm" />
+                            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-sm text-red-500" />
                         </div>
 
-                        <button 
-                            type="submit"
-                            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-orange-100 transition">
+                        <button type="submit" class="btn-primary w-full">
                             Daftar Sekarang
                         </button>
 
-                        <div class="text-center text-sm text-gray-600">
+                        <p class="pt-2 text-center text-sm text-slate-600">
                             Sudah punya akun?
-                            <a href="{{ route('login') }}" class="text-orange-600 hover:text-orange-700 font-bold">
+                            <a href="{{ route('login') }}" class="font-bold text-blue-900 transition hover:text-blue-950">
                                 Login di sini
                             </a>
-                        </div>
+                        </p>
                     </form>
-
                 </div>
+            </section>
+        </div>
+    </main>
 
-                <p class="text-center text-xs text-gray-400 mt-6">
-                    &copy; {{ date('Y') }} genjo. All Rights Reserved.
-                </p>
-
-            </div>
-        </section>
-
-    </div>
-
+    <footer class="py-6 text-center text-xs text-slate-400">
+        &copy; {{ date('Y') }} SABISHOP. All Rights Reserved.
+    </footer>
 </body>
 </html>

@@ -7,112 +7,85 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-gray-50 text-gray-800">
-
-    <!-- HEADER -->
-    <header class="w-full bg-white border-b border-gray-200 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white text-xl">
-                    🛒
-                </div>
-
-                <div>
-                    <h1 class="text-xl font-extrabold text-gray-900 tracking-wide">
-                        SABISHOP
-                    </h1>
-                    <p class="text-xs text-gray-500">
-                        Platform belanja online terpercaya
-                    </p>
-                </div>
+<body class="bg-slate-50 text-slate-800">
+    <header class="sticky top-0 z-50 border-b border-slate-200 border-t-4 border-t-blue-950 bg-white/95 backdrop-blur">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+            <a href="{{ route('beranda') }}" class="flex items-center gap-3">
+                <span class="brand-mark">SB</span>
+                <span class="hidden sm:block">
+                    <span class="block text-sm font-black tracking-wide text-slate-950">SABISHOP</span>
+                    <span class="block text-xs font-medium text-slate-500">Platform belanja online terpercaya</span>
+                </span>
             </a>
 
-            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-                <a href="{{ route('beranda') }}" class="hover:text-orange-500 transition">Beranda</a>
-                <a href="{{ route('produk.public') }}" class="hover:text-orange-500 transition">Produk</a>
-                <a href="{{ route('bantuan') }}" class="hover:text-orange-500 transition"> Bantuan</a>
+            <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
+                <a href="{{ route('beranda') }}" class="transition hover:text-blue-900">Beranda</a>
+                <a href="{{ route('produk.public') }}" class="transition hover:text-blue-900">Produk</a>
+                <a href="{{ route('bantuan') }}" class="transition hover:text-blue-900">Bantuan</a>
             </nav>
         </div>
     </header>
 
-    <!-- MAIN -->
-    <main class="min-h-[calc(100vh-145px)] flex items-center justify-center px-5 py-10">
-        <div class="w-full max-w-6xl bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+    <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+            <section class="panel hidden flex-col justify-between bg-blue-950 p-8 text-white lg:flex">
+                <div class="overflow-hidden rounded-2xl border border-white/10">
+                    <img
+                        src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1200&auto=format&fit=crop"
+                        alt="Belanja online"
+                        class="h-64 w-full object-cover"
+                    >
+                </div>
 
-            <!-- BAGIAN KIRI -->
-            <section class="hidden lg:flex flex-col justify-between bg-gradient-to-br from-orange-500 to-orange-600 p-10 text-white relative overflow-hidden">
-
-                <div class="absolute -top-24 -right-24 w-72 h-72 bg-white/10 rounded-full"></div>
-                <div class="absolute -bottom-20 -left-20 w-60 h-60 bg-white/10 rounded-full"></div>
-
-                <div class="relative z-10">
-                    <span class="inline-block bg-white/20 text-white text-xs font-semibold px-4 py-2 rounded-full mb-6">
-                        Belanja Online Mudah
-                    </span>
-
-                    <h2 class="text-4xl font-extrabold leading-tight mb-4">
-                        Masuk dan lanjutkan pengalaman belanjamu
-                    </h2>
-
-                    <p class="text-orange-50 leading-relaxed max-w-md">
-                        Temukan produk pilihan, pantau pesanan, dan nikmati proses belanja
-                        yang lebih praktis bersama SABISHOP.
+                <div class="mt-8">
+                    <p class="text-xs font-bold uppercase tracking-[0.22em] text-blue-100">Akses Akun</p>
+                    <h1 class="mt-3 text-4xl font-black leading-tight">
+                        Masuk dan lanjutkan belanja Anda.
+                    </h1>
+                    <p class="mt-4 max-w-lg text-sm leading-7 text-blue-100">
+                        Temukan produk, kelola keranjang, dan pantau pesanan dengan tampilan yang lebih rapi.
                     </p>
                 </div>
 
-                <div class="relative z-10 grid grid-cols-2 gap-4 mt-10">
-                    <div class="bg-white/15 backdrop-blur rounded-2xl p-5">
-                        <p class="text-3xl mb-2">📦</p>
-                        <h3 class="font-bold">Produk Lengkap</h3>
-                        <p class="text-sm text-orange-50 mt-1">Banyak pilihan kebutuhan.</p>
+                <div class="mt-8 grid grid-cols-3 gap-3">
+                    <div class="rounded-2xl bg-white/10 p-4">
+                        <p class="text-sm font-black">Aman</p>
+                        <p class="mt-1 text-xs text-blue-100">Akun terlindungi.</p>
                     </div>
-
-                    <div class="bg-white/15 backdrop-blur rounded-2xl p-5">
-                        <p class="text-3xl mb-2">🚚</p>
-                        <h3 class="font-bold">Pengiriman Cepat</h3>
-                        <p class="text-sm text-orange-50 mt-1">Pesanan sampai tujuan.</p>
+                    <div class="rounded-2xl bg-white/10 p-4">
+                        <p class="text-sm font-black">Cepat</p>
+                        <p class="mt-1 text-xs text-blue-100">Proses praktis.</p>
                     </div>
-
-                    <div class="bg-white/15 backdrop-blur rounded-2xl p-5">
-                        <p class="text-3xl mb-2">💳</p>
-                        <h3 class="font-bold">Pembayaran Mudah</h3>
-                        <p class="text-sm text-orange-50 mt-1">Transaksi lebih praktis.</p>
-                    </div>
-
-                    <div class="bg-white/15 backdrop-blur rounded-2xl p-5">
-                        <p class="text-3xl mb-2">🔒</p>
-                        <h3 class="font-bold">Akun Aman</h3>
-                        <p class="text-sm text-orange-50 mt-1">Data pengguna terlindungi.</p>
+                    <div class="rounded-2xl bg-white/10 p-4">
+                        <p class="text-sm font-black">Terpercaya</p>
+                        <p class="mt-1 text-xs text-blue-100">Belanja nyaman.</p>
                     </div>
                 </div>
             </section>
 
-            <!-- FORM LOGIN -->
-            <section class="p-8 sm:p-12 flex items-center">
+            <section class="panel flex items-center p-8 sm:p-10">
                 <div class="w-full max-w-md mx-auto">
-
                     <div class="mb-8">
-                        <h2 class="text-3xl font-extrabold text-gray-900 mb-2">
+                        <p class="text-xs font-bold uppercase tracking-[0.22em] text-blue-900">Login</p>
+                        <h2 class="mt-3 text-3xl font-black text-slate-950">
                             Login Akun
                         </h2>
-                        <p class="text-sm text-gray-500">
+                        <p class="mt-3 text-sm leading-7 text-slate-500">
                             Masukkan email dan password untuk melanjutkan.
                         </p>
                     </div>
 
-                    <!-- Session Status -->
                     <x-auth-session-status class="mb-4" :status="session('status')" />
 
                     <form method="POST" action="{{ route('login') }}" class="space-y-5">
                         @csrf
 
-                        <!-- EMAIL -->
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="email" class="mb-2 block text-sm font-semibold text-slate-700">
                                 Email
                             </label>
 
-                            <input 
+                            <input
                                 id="email"
                                 type="email"
                                 name="email"
@@ -121,97 +94,68 @@
                                 autofocus
                                 autocomplete="username"
                                 placeholder="Masukkan email Anda"
-                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-800 placeholder-gray-400 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition"
+                                class="form-field w-full border-slate-200 bg-slate-50 px-4 py-3"
                             >
 
-                            <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-500 text-sm" />
+                            <x-input-error :messages="$errors->get('email')" class="mt-2 text-sm text-red-500" />
                         </div>
 
-                        <!-- PASSWORD -->
                         <div>
-                            <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="password" class="mb-2 block text-sm font-semibold text-slate-700">
                                 Password
                             </label>
 
-                            <input 
+                            <input
                                 id="password"
                                 type="password"
                                 name="password"
                                 required
                                 autocomplete="current-password"
                                 placeholder="Masukkan password"
-                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-800 placeholder-gray-400 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition"
+                                class="form-field w-full border-slate-200 bg-slate-50 px-4 py-3"
                             >
 
-                            <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-500 text-sm" />
+                            <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-500" />
                         </div>
 
-                        <!-- REMEMBER & FORGOT -->
-                        <div class="flex items-center justify-between text-sm">
+                        <div class="flex items-center justify-between gap-4 text-sm">
                             <label for="remember_me" class="inline-flex items-center">
-                                <input 
+                                <input
                                     id="remember_me"
                                     type="checkbox"
                                     name="remember"
-                                    class="rounded border-gray-300 text-orange-500 shadow-sm focus:ring-orange-500"
+                                    class="rounded border-slate-300 text-blue-950 shadow-sm focus:ring-blue-500"
                                 >
-                                <span class="ms-2 text-gray-600">Ingat saya</span>
+                                <span class="ms-2 text-slate-600">Ingat saya</span>
                             </label>
 
                             @if (Route::has('password.request'))
-                                <a href="{{ route('password.request') }}" class="text-orange-600 hover:text-orange-700 font-semibold">
+                                <a href="{{ route('password.request') }}" class="font-semibold text-blue-900 transition hover:text-blue-950">
                                     Lupa password?
                                 </a>
                             @endif
                         </div>
 
-                        <!-- BUTTON -->
-                        <button 
-                            type="submit"
-                            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-orange-200 transition duration-300"
-                        >
+                        <button type="submit" class="btn-primary w-full">
                             Login
                         </button>
 
-                        <!-- REGISTER -->
                         @if (Route::has('register'))
-                            <div class="text-center text-sm text-gray-600 pt-2">
+                            <p class="pt-2 text-center text-sm text-slate-600">
                                 Belum punya akun?
-                                <a href="{{ route('register') }}" class="text-orange-600 hover:text-orange-700 font-bold">
+                                <a href="{{ route('register') }}" class="font-bold text-blue-900 transition hover:text-blue-950">
                                     Daftar sekarang
                                 </a>
-                            </div>
+                            </p>
                         @endif
                     </form>
-
-                    <!-- INFO -->
-                    <div class="mt-8 pt-6 border-t border-gray-200 grid grid-cols-3 gap-3 text-center">
-                        <div>
-                            <p class="text-lg">🔒</p>
-                            <p class="text-xs text-gray-500 mt-1">Aman</p>
-                        </div>
-
-                        <div>
-                            <p class="text-lg">⚡</p>
-                            <p class="text-xs text-gray-500 mt-1">Cepat</p>
-                        </div>
-
-                        <div>
-                            <p class="text-lg">✅</p>
-                            <p class="text-xs text-gray-500 mt-1">Terpercaya</p>
-                        </div>
-                    </div>
-
                 </div>
             </section>
-
         </div>
     </main>
 
-    <!-- FOOTER -->
-    <footer class="w-full text-center py-5 text-sm text-gray-500">
-        &copy; {{ date('Y') }} genjo. All Rights Reserved.
+    <footer class="py-6 text-center text-xs text-slate-400">
+        &copy; {{ date('Y') }} SABISHOP. All Rights Reserved.
     </footer>
-
 </body>
 </html>

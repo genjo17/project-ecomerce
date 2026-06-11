@@ -3,7 +3,7 @@
         <div class="bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-sm">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <p class="text-sm font-bold text-orange-600 uppercase tracking-wider">
+                    <p class="text-sm font-bold text-blue-600 uppercase tracking-wider">
                         Panel Admin
                     </p>
                     <h2 class="font-extrabold text-2xl text-gray-900 leading-tight">
@@ -14,12 +14,12 @@
                     </p>
                 </div>
                 <a href="{{ route('admin.reports') }}"
-                   class="inline-flex items-center justify-center bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold py-3 px-5 rounded-xl transition shadow-sm">
+                   class="btn-primary inline-flex items-center justify-center px-5 py-3 text-sm">
                    📊 Laporan Penjualan
                 </a>
 
                 <a href="{{ route('dashboard') }}"
-                   class="inline-flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold py-3 px-5 rounded-xl transition shadow-sm">
+                   class="btn-secondary inline-flex items-center justify-center px-5 py-3 text-sm">
                     ⬅️ Keluar ke Toko Utama
                 </a>
             </div>
@@ -74,7 +74,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
 
                 <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-                    <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mb-4">
                         📦
                     </div>
                     <p class="text-sm text-gray-500">Total Produk</p>
@@ -131,21 +131,16 @@
                 <!-- FORM TAMBAH PRODUK -->
                 <section class="lg:col-span-1">
                     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden sticky top-6">
-
-                        <div class="bg-gradient-to-br from-orange-500 to-amber-500 p-6 text-white relative overflow-hidden">
-                            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-white/15 rounded-full"></div>
-
-                            <div class="relative z-10">
-                                <p class="text-xs font-bold uppercase tracking-wider text-orange-50">
-                                    Produk Baru
-                                </p>
-                                <h3 class="text-2xl font-extrabold mt-1">
-                                    Tambah Produk
-                                </h3>
-                                <p class="text-sm text-orange-50 mt-2">
-                                    Masukkan data produk agar tampil di katalog toko.
-                                </p>
-                            </div>
+                        <div class="border-b border-slate-200 bg-blue-950 p-6 text-white">
+                            <p class="text-xs font-bold uppercase tracking-[0.22em] text-blue-100">
+                                Produk Baru
+                            </p>
+                            <h3 class="mt-2 text-2xl font-extrabold">
+                                Tambah Produk
+                            </h3>
+                            <p class="mt-2 text-sm text-blue-100">
+                                Masukkan data produk agar tampil di katalog toko.
+                            </p>
                         </div>
 
                         <form action="{{ route('admin.product.store') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-5">
@@ -160,7 +155,7 @@
                                        value="{{ old('name') }}"
                                        required
                                        placeholder="Contoh: Kaos Polos"
-                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                             </div>
 
                             <div>
@@ -170,7 +165,7 @@
                                 <textarea name="description"
                                           rows="3"
                                           placeholder="Tulis deskripsi singkat produk"
-                                          class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">{{ old('description') }}</textarea>
+                                          class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">{{ old('description') }}</textarea>
                             </div>
 
                             <div>
@@ -180,7 +175,7 @@
 
                                 <select name="category"
                                         required
-                                        class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                        class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                                     <option value="">-- Pilih Kategori --</option>
                                     @foreach($categories as $cat)
                                         <option value="{{ $cat }}" {{ old('category') == $cat ? 'selected' : '' }}>
@@ -200,7 +195,7 @@
                                        required
                                        min="0"
                                        placeholder="Contoh: 150000"
-                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                             </div>
 
                             <div>
@@ -213,7 +208,7 @@
                                        required
                                        min="0"
                                        placeholder="Contoh: 25"
-                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                             </div>
 
                             <div>
@@ -224,7 +219,7 @@
                                 <input type="file"
                                        name="image"
                                        accept="image/png, image/jpeg, image/jpg, image/webp"
-                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
 
                                 <p class="text-xs text-gray-400 mt-2">
                                     Format gambar: JPG, JPEG, PNG, atau WEBP. Maksimal 2 MB.
@@ -232,7 +227,7 @@
                             </div>
 
                             <button type="submit"
-                                    class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 rounded-xl shadow-sm transition">
+                                    class="btn-primary w-full py-3">
                                 Simpan Produk
                             </button>
                         </form>
@@ -255,7 +250,7 @@
                                 </p>
                             </div>
 
-                            <span class="inline-flex items-center bg-orange-50 text-orange-700 text-xs font-bold px-4 py-2 rounded-full">
+                            <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-bold px-4 py-2 rounded-full">
                                 {{ $totalProduk }} produk
                             </span>
                         </div>
@@ -293,7 +288,7 @@
                                                     Rp {{ number_format((float) $p->price, 0, ',', '.') }}
                                                 </p>
 
-                                                <span class="inline-flex mt-2 bg-orange-50 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">
+                                                <span class="inline-flex mt-2 bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
                                                     {{ $p->category ?? 'Belum ada kategori' }}
                                                 </span>
 
@@ -323,7 +318,7 @@
                                                        name="stock"
                                                        value="{{ $p->stock }}"
                                                        min="0"
-                                                       class="w-24 rounded-xl border border-gray-300 px-3 py-2 text-center text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                                       class="w-24 rounded-xl border border-gray-300 px-3 py-2 text-center text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
 
                                                 <button type="submit"
                                                         class="bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 text-sm font-bold rounded-xl transition">
@@ -347,7 +342,7 @@
 
                                     <!-- EDIT PRODUK -->
                                     <details class="mt-5 bg-gray-50 border border-gray-100 rounded-2xl p-5">
-                                        <summary class="cursor-pointer font-extrabold text-orange-600">
+                                        <summary class="cursor-pointer font-extrabold text-blue-600">
                                             Edit Detail Produk
                                         </summary>
 
@@ -363,7 +358,7 @@
                                                        name="name"
                                                        value="{{ $p->name }}"
                                                        required
-                                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                                             </div>
 
                                             <div>
@@ -373,7 +368,7 @@
 
                                                 <select name="category"
                                                         required
-                                                        class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                                        class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                                                     <option value="">-- Pilih Kategori --</option>
                                                     @foreach($categories as $cat)
                                                         <option value="{{ $cat }}" {{ ($p->category ?? '') == $cat ? 'selected' : '' }}>
@@ -392,7 +387,7 @@
                                                        value="{{ $p->price }}"
                                                        required
                                                        min="0"
-                                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                                             </div>
 
                                             <div>
@@ -404,7 +399,7 @@
                                                        value="{{ $p->stock }}"
                                                        required
                                                        min="0"
-                                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                                             </div>
 
                                             <div class="md:col-span-2">
@@ -421,7 +416,7 @@
                                                 <input type="file"
                                                        name="image"
                                                        accept="image/png, image/jpeg, image/jpg, image/webp"
-                                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
 
                                                 <p class="text-xs text-gray-400 mt-2">
                                                     Kosongkan jika tidak ingin mengganti gambar.
@@ -434,12 +429,12 @@
                                                 </label>
                                                 <textarea name="description"
                                                           rows="3"
-                                                          class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">{{ $p->description }}</textarea>
+                                                          class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">{{ $p->description }}</textarea>
                                             </div>
 
                                             <div class="md:col-span-2 flex justify-end">
                                                 <button type="submit"
-                                                        class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 text-sm font-extrabold rounded-xl transition">
+                                                        class="btn-primary px-6 py-3 text-sm">
                                                     Simpan Perubahan
                                                 </button>
                                             </div>
@@ -489,7 +484,7 @@
                                     } elseif ($o->status == 'Sedang diproses') {
                                         $statusClass = 'bg-yellow-100 text-yellow-700';
                                     } elseif ($o->status == 'Sedang dikirim') {
-                                        $statusClass = 'bg-orange-100 text-orange-700';
+                                        $statusClass = 'bg-blue-100 text-blue-700';
                                     } elseif ($o->status == 'Sampai tujuan') {
                                         $statusClass = 'bg-green-100 text-green-700';
                                     }
@@ -520,9 +515,32 @@
                                             <p class="text-xs text-gray-400">
                                                 Total Pembayaran
                                             </p>
-                                            <p class="text-xl font-extrabold text-orange-600">
+                                            <p class="text-xl font-extrabold text-blue-600">
                                                 Rp {{ number_format((float) $o->total_price, 0, ',', '.') }}
                                             </p>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                Ongkir Rp {{ number_format((float) ($o->shipping_cost ?? 0), 0, ',', '.') }}
+                                                @if(($o->payment_fee ?? 0) > 0)
+                                                    + biaya bayar Rp {{ number_format((float) $o->payment_fee, 0, ',', '.') }}
+                                                @endif
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-5 grid gap-3 rounded-2xl bg-white p-4 text-sm md:grid-cols-3">
+                                        <div>
+                                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Penerima</p>
+                                            <p class="mt-1 font-bold text-gray-800">{{ $o->receiver_name ?? '-' }}</p>
+                                            <p class="text-gray-500">{{ $o->phone ?? '-' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Pengiriman</p>
+                                            <p class="mt-1 font-bold text-gray-800">{{ $o->shipping_method ?? '-' }}</p>
+                                            <p class="text-gray-500">{{ $o->payment_method ?? '-' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Alamat</p>
+                                            <p class="mt-1 line-clamp-2 text-gray-600">{{ $o->address ?? '-' }}</p>
                                         </div>
                                     </div>
 
@@ -534,7 +552,7 @@
                                         </label>
 
                                         <select name="status"
-                                                class="flex-grow rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
+                                                class="flex-grow rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                                             <option value="Pesanan diterima" {{ $o->status == 'Pesanan diterima' ? 'selected' : '' }}>
                                                 Pesanan diterima
                                             </option>
@@ -550,7 +568,7 @@
                                         </select>
 
                                         <button type="submit"
-                                                class="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 text-sm font-bold rounded-xl transition">
+                                                class="btn-primary px-5 py-2.5 text-sm">
                                             Update Status
                                         </button>
                                     </form>

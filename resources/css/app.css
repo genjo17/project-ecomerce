@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-slate-50 text-slate-800;
+    }
+
+    ::selection {
+        @apply bg-blue-100 text-blue-950;
+    }
+}
+
+@layer components {
+    .brand-mark {
+        @apply inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-950 text-sm font-black tracking-tight text-white shadow-sm shadow-blue-200;
+    }
+
+    .page-shell {
+        @apply min-h-screen bg-slate-50;
+    }
+
+    .panel {
+        @apply rounded-2xl border border-slate-200 bg-white shadow-[0_8px_28px_rgba(15,23,42,0.04)];
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center rounded-xl bg-blue-950 px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-100;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center rounded-xl border border-blue-100 bg-white px-5 py-3 text-sm font-extrabold text-blue-950 transition hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-100;
+    }
+
+    .form-field {
+        @apply rounded-xl border-slate-300 bg-white text-sm text-slate-700 shadow-sm transition focus:border-blue-950 focus:ring-blue-950;
+    }
+}
