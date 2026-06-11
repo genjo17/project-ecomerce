@@ -2,14 +2,40 @@
     @php
         $catalogRoute = Route::has('dashboard') ? route('dashboard') : '#';
         $checkoutRoute = Route::has('checkout') ? route('checkout') : '#';
+        $savedAddresses = collect($addresses ?? []);
+        $defaultAddress = $savedAddresses->firstWhere('is_default', true) ?? $savedAddresses->first();
+        $currentUser = auth()->user();
 
         $subtotal = $items->sum(function ($item) {
             return (float) data_get($item, 'price', 0) * (int) data_get($item, 'quantity', 1);
         });
 
-        $shippingCost = 0;
+        $shippingMethods = collect($shippingOptions ?? []);
+        $paymentMethods = collect($paymentOptions ?? []);
+        $oldShippingMethod = old('shipping_method', $shippingMethods->keys()->first());
+        $oldPaymentMethod = old('payment_method', $paymentMethods->keys()->first());
+        $shippingCost = (int) data_get($shippingMethods->get($oldShippingMethod), 'cost', 0);
+        $paymentFee = (int) data_get($paymentMethods->get($oldPaymentMethod), 'fee', 0);
         $discount = 0;
-        $grandTotal = $subtotal + $shippingCost - $discount;
+        $grandTotal = $subtotal + $shippingCost + $paymentFee - $discount;
+
+        $oldShippingAddressId = old('shipping_address_id');
+        $initialSelectedAddress = $defaultAddress;
+        $matchedOldAddress = null;
+
+        if ($oldShippingAddressId !== null && $oldShippingAddressId !== '' && $oldShippingAddressId !== 'manual') {
+            $matchedOldAddress = $savedAddresses->firstWhere('id', (string) $oldShippingAddressId)
+                ?? $savedAddresses->firstWhere('id', (int) $oldShippingAddressId)
+                ?? $defaultAddress;
+        }
+
+        $initialShippingAddressId = $oldShippingAddressId !== null
+            ? ($oldShippingAddressId !== '' ? ((string) ($matchedOldAddress?->id ?? $defaultAddress?->id ?? 'manual')) : 'manual')
+            : ($defaultAddress ? (string) $defaultAddress->id : 'manual');
+        $initialSelectedAddress = $matchedOldAddress ?? $defaultAddress;
+        $initialReceiverName = old('receiver_name', $initialSelectedAddress->recipient_name ?? $currentUser->name ?? '');
+        $initialPhone = old('phone', $initialSelectedAddress->phone ?? $currentUser->phone ?? '');
+        $initialAddress = old('address', $initialSelectedAddress->address_line ?? '');
     @endphp
 
     <div class="min-h-screen bg-gray-50">
@@ -43,7 +69,7 @@
 
                 {{-- EMPTY CART --}}
                 <div class="bg-white border border-gray-100 rounded-3xl shadow-sm p-12 text-center">
-                    <div class="w-24 h-24 mx-auto rounded-full bg-orange-50 flex items-center justify-center text-5xl mb-6">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-blue-50 flex items-center justify-center text-5xl mb-6">
                         🛒
                     </div>
 
@@ -56,14 +82,83 @@
                     </p>
 
                     <a href="{{ $catalogRoute }}"
-                       class="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-extrabold shadow-sm transition">
+                       class="btn-primary px-8 py-4">
                         Mulai Belanja
                     </a>
                 </div>
 
             @else
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8"
+                     x-data="{
+                         subtotal: @js((int) $subtotal),
+                         discount: @js((int) $discount),
+                         selectedShipping: @js($oldShippingMethod),
+                         selectedPayment: @js($oldPaymentMethod),
+                         shippingOptions: @js($shippingMethods),
+                         paymentOptions: @js($paymentMethods),
+                         selectedAddressId: @js($initialShippingAddressId),
+                         addresses: @js($savedAddresses->map(function ($address) {
+                             return [
+                                 'id' => (string) $address->id,
+                                 'label' => $address->label,
+                                 'recipient_name' => $address->recipient_name,
+                                 'phone' => $address->phone,
+                                 'address_line' => $address->address_line,
+                                 'is_default' => (bool) $address->is_default,
+                             ];
+                         })->values()),
+                         manualDefaults: {
+                             receiver_name: @js($initialReceiverName),
+                             phone: @js($initialPhone),
+                             address: @js($initialAddress),
+                         },
+                         fields: {
+                             receiver_name: @js($initialReceiverName),
+                             phone: @js($initialPhone),
+                             address: @js($initialAddress),
+                         },
+                         get selectedAddress() {
+                             return this.addresses.find((address) => String(address.id) === String(this.selectedAddressId)) || null;
+                         },
+                         get shippingCost() {
+                             return Number(this.shippingOptions[this.selectedShipping]?.cost || 0);
+                         },
+                         get paymentFee() {
+                             return Number(this.paymentOptions[this.selectedPayment]?.fee || 0);
+                         },
+                         get grandTotal() {
+                             return this.subtotal + this.shippingCost + this.paymentFee - this.discount;
+                         },
+                         rupiah(value) {
+                             return new Intl.NumberFormat('id-ID', {
+                                 style: 'currency',
+                                 currency: 'IDR',
+                                 maximumFractionDigits: 0,
+                             }).format(Number(value || 0));
+                         },
+                         syncAddress() {
+                             if (this.selectedAddressId === 'manual' || ! this.selectedAddressId) {
+                                 this.fields = { ...this.manualDefaults };
+                                 return;
+                             }
+
+                             const selected = this.selectedAddress;
+
+                             if (selected) {
+                                 this.fields = {
+                                     receiver_name: selected.recipient_name,
+                                     phone: selected.phone,
+                                     address: selected.address_line,
+                                 };
+                             }
+                         },
+                         useManual() {
+                             this.selectedAddressId = 'manual';
+                             this.fields = { ...this.manualDefaults };
+                         },
+                     }"
+                     x-init="syncAddress()">
 
                     {{-- LEFT CONTENT --}}
                     <div class="lg:col-span-8 space-y-6">
@@ -92,7 +187,7 @@
     $itemPrice = (float) (data_get($item, 'price') ?? 0);
     $itemQty = (int) data_get($item, 'quantity', 1);
     $itemStock = data_get($item, 'stock');
-    $itemImage = data_get($item, 'image_url');
+    $itemImage = data_get($item, 'image_url') ?? data_get($item, 'image');
 
     $itemTotal = $itemPrice * $itemQty;
 
@@ -165,7 +260,7 @@
                                                         <p class="text-sm text-gray-500">
                                                             Total
                                                         </p>
-                                                        <p class="text-xl font-extrabold text-orange-600">
+                                                        <p class="text-xl font-extrabold text-blue-600">
                                                             Rp {{ number_format($itemTotal, 0, ',', '.') }}
                                                         </p>
                                                     </div>
@@ -175,64 +270,49 @@
                                                 <div class="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
                                                     {{-- QUANTITY --}}
-                                                    <div>
-                                                        @if($hasUpdateRoute)
-                                                            <form action="{{ route('cart.update', $itemId) }}"
-                                                                  method="POST"
-                                                                  class="flex items-center gap-3">
-                                                                @csrf
-                                                                @method('PATCH')
-
-                                                                <label class="text-sm font-bold text-gray-600">
-                                                                    Jumlah
-                                                                </label>
-
-                                                                <input type="number"
-                                                                       name="quantity"
-                                                                       value="{{ $itemQty }}"
-                                                                       min="1"
-                                                                       @if(!is_null($itemStock)) max="{{ $itemStock }}" @endif
-                                                                       class="w-20 rounded-xl border-gray-300 text-center font-bold focus:border-orange-500 focus:ring-orange-500">
-
-                                                                <button type="submit"
-                                                                        class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold transition">
-                                                                    Update
-                                                                </button>
-                                                            </form>
-                                                        @else
-                                                            <div class="flex items-center gap-3">
-                                                            <span class="text-sm font-bold text-gray-600">
+                                                    <div class="flex items-center gap-3">
+                                                        <span class="text-sm font-bold text-gray-600">
                                                             Jumlah
-                                                            </span>
+                                                        </span>
 
-    <form action="{{ route('cart.update', $itemId) }}" method="POST">
-        @csrf
-        @method('PATCH')
+                                                        @if($hasUpdateRoute)
+                                                            <div class="inline-flex items-center rounded-2xl border border-gray-200 bg-gray-50 p-1 shadow-sm">
+                                                                <form action="{{ route('cart.update', $itemId) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('PATCH')
 
-        <input type="hidden" name="action" value="decrease">
+                                                                    <input type="hidden" name="action" value="decrease">
 
-        <button type="submit"
-                class="w-9 h-9 rounded-xl border border-gray-300 bg-white hover:bg-orange-50 hover:border-orange-300 hover:text-orange-600 font-bold transition">
-            −
-        </button>
-    </form>
+                                                                    <button type="submit"
+                                                                            @disabled($itemQty <= 1)
+                                                                            aria-label="Kurangi jumlah {{ $itemName }}"
+                                                                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-transparent bg-white text-lg font-black text-gray-700 transition hover:border-blue-950 hover:bg-blue-50 hover:text-blue-950 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300">
+                                                                        -
+                                                                    </button>
+                                                                </form>
 
-    <div class="min-w-[45px] h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center font-extrabold text-gray-900">
-        {{ $itemQty }}
-    </div>
+                                                                <div class="flex h-10 min-w-[52px] items-center justify-center px-3 text-center text-base font-extrabold text-gray-950">
+                                                                    {{ $itemQty }}
+                                                                </div>
 
-    <form action="{{ route('cart.update', $itemId) }}" method="POST">
-        @csrf
-        @method('PATCH')
+                                                                <form action="{{ route('cart.update', $itemId) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('PATCH')
 
-        <input type="hidden" name="action" value="increase">
+                                                                    <input type="hidden" name="action" value="increase">
 
-        <button type="submit"
-                class="w-9 h-9 rounded-xl border border-gray-300 bg-white hover:bg-orange-50 hover:border-orange-300 hover:text-orange-600 font-bold transition">
-            +
-        </button>
-    </form>
-</div>
+                                                                    <button type="submit"
+                                                                            @disabled(!is_null($itemStock) && $itemQty >= $itemStock)
+                                                                            aria-label="Tambah jumlah {{ $itemName }}"
+                                                                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-transparent bg-blue-950 text-lg font-black text-white transition hover:bg-blue-900 disabled:cursor-not-allowed disabled:bg-gray-300">
+                                                                        +
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        @else
+                                                            <div class="rounded-xl bg-gray-100 px-4 py-2 text-sm font-extrabold text-gray-800">
+                                                                {{ $itemQty }}
+                                                            </div>
                                                         @endif
                                                     </div>
 
@@ -268,7 +348,7 @@
                                     Informasi Pengiriman
                                 </h2>
                                 <p class="text-sm text-gray-500 mt-1">
-                                    Isi data penerima dan metode checkout.
+                                    Pilih alamat tersimpan atau gunakan alamat baru untuk pesanan ini.
                                 </p>
                             </div>
 
@@ -277,6 +357,57 @@
                                   method="POST"
                                   onsubmit="return confirm('Apakah Anda yakin ingin memproses checkout pesanan ini?')">
                                 @csrf
+
+                                <input type="hidden" name="shipping_address_id" :value="selectedAddressId === 'manual' ? '' : selectedAddressId">
+
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                                            Alamat Tersimpan
+                                        </label>
+                                        <select x-model="selectedAddressId"
+                                                @change="syncAddress()"
+                                                class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="manual">Gunakan alamat baru</option>
+                                            @foreach($savedAddresses as $address)
+                                                <option value="{{ $address->id }}">
+                                                    {{ $address->label }}
+                                                    - {{ $address->recipient_name }}
+                                                    {{ $address->is_default ? '(Utama)' : '' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @if($savedAddresses->isEmpty())
+                                            <p class="mt-2 text-xs text-slate-500">
+                                                Belum ada alamat tersimpan. Tambahkan dari halaman profil.
+                                            </p>
+                                        @else
+                                            <p class="mt-2 text-xs text-slate-500">
+                                                Ubah alamat di profil jika ingin menyimpan perubahan secara permanen.
+                                            </p>
+                                        @endif
+                                    </div>
+
+                                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                        <template x-if="selectedAddressId === 'manual'">
+                                            <div>
+                                                <p class="text-sm font-extrabold text-slate-900">Alamat baru</p>
+                                                <p class="mt-1 text-sm text-slate-500">
+                                                    Isi detail pengiriman di bawah ini untuk pesanan saat ini.
+                                                </p>
+                                            </div>
+                                        </template>
+
+                                        <template x-if="selectedAddressId !== 'manual'">
+                                            <div>
+                                                <p class="text-sm font-extrabold text-slate-900" x-text="selectedAddress?.label"></p>
+                                                <p class="mt-1 text-sm text-slate-700" x-text="selectedAddress?.recipient_name"></p>
+                                                <p class="text-sm text-slate-500" x-text="selectedAddress?.phone"></p>
+                                                <p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-600" x-text="selectedAddress?.address_line"></p>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
@@ -287,10 +418,13 @@
                                         </label>
                                         <input type="text"
                                                name="receiver_name"
-                                               value="{{ old('receiver_name') }}"
+                                               x-model="fields.receiver_name"
+                                               value="{{ $initialReceiverName }}"
+                                               :readonly="selectedAddressId !== 'manual'"
                                                required
                                                placeholder="Contoh: Dadan"
-                                               class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-orange-500 focus:ring-orange-500">
+                                               class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
+                                               :class="selectedAddressId !== 'manual' ? 'bg-slate-50 text-slate-600' : 'bg-white'">
                                         @error('receiver_name')
                                             <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                                         @enderror
@@ -303,79 +437,128 @@
                                         </label>
                                         <input type="text"
                                                name="phone"
-                                               value="{{ old('phone') }}"
+                                               x-model="fields.phone"
+                                               value="{{ $initialPhone }}"
+                                               :readonly="selectedAddressId !== 'manual'"
                                                required
                                                placeholder="Contoh: 081234567890"
-                                               class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-orange-500 focus:ring-orange-500">
+                                               class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
+                                               :class="selectedAddressId !== 'manual' ? 'bg-slate-50 text-slate-600' : 'bg-white'">
                                         @error('phone')
                                             <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                                         @enderror
                                     </div>
 
-                                    {{-- SHIPPING --}}
-                                    <div>
-                                        <label class="block text-sm font-bold text-gray-700 mb-2">
-                                            Metode Pengiriman
-                                        </label>
-                                        <select name="shipping_method"
-                                                required
-                                                class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-orange-500 focus:ring-orange-500">
-                                            <option value="">Pilih metode pengiriman</option>
-                                            <option value="Ambil di Tempat" {{ old('shipping_method') == 'Ambil di Tempat' ? 'selected' : '' }}>
-                                                Ambil di Tempat
-                                            </option>
-                                            <option value="Kurir Toko" {{ old('shipping_method') == 'Kurir Toko' ? 'selected' : '' }}>
-                                                Kurir Toko
-                                            </option>
-                                            <option value="Jasa Pengiriman" {{ old('shipping_method') == 'Jasa Pengiriman' ? 'selected' : '' }}>
-                                                Jasa Pengiriman
-                                            </option>
-                                        </select>
-                                        @error('shipping_method')
-                                            <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
-                                        @enderror
+                                </div>
+
+                                {{-- SHIPPING --}}
+                                <div class="mt-6">
+                                    <div class="mb-3 flex items-end justify-between gap-4">
+                                        <div>
+                                            <h3 class="text-sm font-extrabold text-gray-900">
+                                                Metode Pengiriman
+                                            </h3>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                Pilih layanan yang sesuai dengan kebutuhan pesanan.
+                                            </p>
+                                        </div>
+                                        <p class="text-sm font-extrabold text-blue-600" x-text="rupiah(shippingCost)"></p>
                                     </div>
 
-                                    {{-- PAYMENT --}}
-                                    <div>
-                                        <label class="block text-sm font-bold text-gray-700 mb-2">
-                                            Metode Pembayaran
-                                        </label>
-                                        <select name="payment_method"
-                                                required
-                                                class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-orange-500 focus:ring-orange-500">
-                                            <option value="">Pilih metode pembayaran</option>
-                                            <option value="COD" {{ old('payment_method') == 'COD' ? 'selected' : '' }}>
-                                                COD / Bayar di Tempat
-                                            </option>
-                                            <option value="Transfer Bank" {{ old('payment_method') == 'Transfer Bank' ? 'selected' : '' }}>
-                                                Transfer Bank
-                                            </option>
-                                            <option value="QRIS" {{ old('payment_method') == 'QRIS' ? 'selected' : '' }}>
-                                                QRIS
-                                            </option>
-                                        </select>
-                                        @error('payment_method')
-                                            <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
-                                        @enderror
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        @foreach($shippingMethods as $key => $option)
+                                            <label class="relative cursor-pointer rounded-2xl border p-4 transition"
+                                                   :class="selectedShipping === @js($key) ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-100' : 'border-gray-200 bg-white hover:border-blue-200'">
+                                                <input type="radio"
+                                                       name="shipping_method"
+                                                       value="{{ $key }}"
+                                                       x-model="selectedShipping"
+                                                       required
+                                                       class="sr-only">
+                                                <div class="flex items-start justify-between gap-4">
+                                                    <div>
+                                                        <p class="font-extrabold text-gray-900">
+                                                            {{ $option['label'] }}
+                                                        </p>
+                                                        <p class="mt-1 text-sm leading-relaxed text-gray-500">
+                                                            {{ $option['description'] }}
+                                                        </p>
+                                                        <p class="mt-2 text-xs font-bold uppercase tracking-wide text-gray-400">
+                                                            {{ $option['eta'] }}
+                                                        </p>
+                                                    </div>
+                                                    <span class="shrink-0 text-sm font-extrabold text-gray-900">
+                                                        {{ $option['cost'] > 0 ? 'Rp ' . number_format($option['cost'], 0, ',', '.') : 'Gratis' }}
+                                                    </span>
+                                                </div>
+                                            </label>
+                                        @endforeach
                                     </div>
 
+                                    @error('shipping_method')
+                                        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- PAYMENT --}}
+                                <div class="mt-6">
+                                    <div class="mb-3 flex items-end justify-between gap-4">
+                                        <div>
+                                            <h3 class="text-sm font-extrabold text-gray-900">
+                                                Metode Pembayaran
+                                            </h3>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                Total akan menyesuaikan jika ada biaya layanan.
+                                            </p>
+                                        </div>
+                                        <p class="text-sm font-extrabold text-blue-600" x-text="paymentFee > 0 ? rupiah(paymentFee) : 'Tanpa biaya'"></p>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        @foreach($paymentMethods as $key => $option)
+                                            <label class="relative cursor-pointer rounded-2xl border p-4 transition"
+                                                   :class="selectedPayment === @js($key) ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-100' : 'border-gray-200 bg-white hover:border-blue-200'">
+                                                <input type="radio"
+                                                       name="payment_method"
+                                                       value="{{ $key }}"
+                                                       x-model="selectedPayment"
+                                                       required
+                                                       class="sr-only">
+                                                <p class="font-extrabold text-gray-900">
+                                                    {{ $option['label'] }}
+                                                </p>
+                                                <p class="mt-1 text-sm leading-relaxed text-gray-500">
+                                                    {{ $option['description'] }}
+                                                </p>
+                                                <p class="mt-3 text-sm font-extrabold text-gray-900">
+                                                    {{ $option['fee'] > 0 ? '+ Rp ' . number_format($option['fee'], 0, ',', '.') : 'Biaya layanan gratis' }}
+                                                </p>
+                                            </label>
+                                        @endforeach
+                                    </div>
+
+                                    @error('payment_method')
+                                        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 {{-- ADDRESS --}}
                                 <div class="mt-5">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">
-                                        Alamat Lengkap Pengiriman
-                                    </label>
-                                    <textarea name="address"
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                                            Alamat Lengkap Pengiriman
+                                        </label>
+                                        <textarea name="address"
+                                              x-model="fields.address"
+                                              :readonly="selectedAddressId !== 'manual'"
                                               required
                                               rows="4"
                                               placeholder="Tulis alamat lengkap, nama jalan, nomor rumah, RT/RW, kelurahan, kecamatan, kota/kabupaten..."
-                                              class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-orange-500 focus:ring-orange-500">{{ old('address') }}</textarea>
-                                    @error('address')
-                                        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                                              class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
+                                              :class="selectedAddressId !== 'manual' ? 'bg-slate-50 text-slate-600' : 'bg-white'">{{ $initialAddress }}</textarea>
+                                        @error('address')
+                                            <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
 
                                 {{-- NOTES --}}
                                 <div class="mt-5">
@@ -386,7 +569,7 @@
                                     <textarea name="notes"
                                               rows="3"
                                               placeholder="Contoh: Tolong dikemas rapi, kirim sore hari, atau catatan tambahan lainnya..."
-                                              class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-orange-500 focus:ring-orange-500">{{ old('notes') }}</textarea>
+                                              class="w-full rounded-2xl border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">{{ old('notes') }}</textarea>
                                     @error('notes')
                                         <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -413,8 +596,15 @@
 
                                 <div class="flex justify-between gap-4 text-gray-600">
                                     <span>Ongkos Kirim</span>
-                                    <span class="font-bold text-gray-900">
-                                        Rp {{ number_format($shippingCost, 0, ',', '.') }}
+                                    <span class="font-bold text-gray-900" x-text="shippingCost > 0 ? rupiah(shippingCost) : 'Gratis'">
+                                        {{ $shippingCost > 0 ? 'Rp ' . number_format($shippingCost, 0, ',', '.') : 'Gratis' }}
+                                    </span>
+                                </div>
+
+                                <div class="flex justify-between gap-4 text-gray-600">
+                                    <span>Biaya Pembayaran</span>
+                                    <span class="font-bold text-gray-900" x-text="paymentFee > 0 ? rupiah(paymentFee) : 'Gratis'">
+                                        {{ $paymentFee > 0 ? 'Rp ' . number_format($paymentFee, 0, ',', '.') : 'Gratis' }}
                                     </span>
                                 </div>
 
@@ -430,27 +620,27 @@
                                         <span class="font-extrabold text-gray-900">
                                             Total Pembayaran
                                         </span>
-                                        <span class="text-2xl font-extrabold text-orange-600 text-right">
+                                        <span class="text-2xl font-extrabold text-blue-600 text-right" x-text="rupiah(grandTotal)">
                                             Rp {{ number_format($grandTotal, 0, ',', '.') }}
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="mt-6 rounded-2xl bg-orange-50 border border-orange-100 px-4 py-3">
-                                <p class="text-sm text-orange-700 leading-relaxed">
-                                    Pesanan akan diproses setelah data pengiriman dan metode pembayaran dilengkapi.
+                            <div class="mt-6 rounded-2xl bg-blue-50 border border-blue-100 px-4 py-3">
+                                <p class="text-sm text-blue-700 leading-relaxed">
+                                    Pesanan akan diproses setelah admin mengonfirmasi pembayaran dan ketersediaan pengiriman.
                                 </p>
                             </div>
 
                             <button type="submit"
                                     form="checkoutForm"
-                                    class="mt-6 w-full rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-4 px-5 shadow-sm transition">
+                                    class="btn-primary mt-6 w-full py-4 px-5">
                                 Buat Pesanan
                             </button>
 
                             <a href="{{ $catalogRoute }}"
-                               class="mt-4 w-full inline-flex justify-center items-center rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold py-4 px-5 transition">
+                               class="btn-secondary mt-4 w-full inline-flex justify-center items-center py-4 px-5">
                                 Kembali ke Katalog
                             </a>
                         </div>

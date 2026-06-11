@@ -7,189 +7,149 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-50 text-gray-800">
-
-    <!-- NAVBAR -->
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
+<body class="bg-slate-50 text-slate-800">
+    <header class="sticky top-0 z-50 border-b border-slate-200 border-t-4 border-t-blue-950 bg-white/95 backdrop-blur">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
             <a href="{{ route('beranda') }}" class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-orange-500 flex items-center justify-center text-white text-xl shadow-sm">
-                    🛒
-                </div>
-
-                <div>
-                    <h1 class="text-xl font-extrabold text-gray-900 tracking-wide">
-                        SABISHOP
-                    </h1>
-                    <p class="text-xs text-gray-500">
-                        Platform belanja online terpercaya
-                    </p>
-                </div>
+                <span class="brand-mark">SB</span>
+                <span class="hidden sm:block">
+                    <span class="block text-sm font-black tracking-wide text-slate-950">SABISHOP</span>
+                    <span class="block text-xs font-medium text-slate-500">Platform belanja online terpercaya</span>
+                </span>
             </a>
 
-            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-600">
-                <a href="{{ route('beranda') }}" class="hover:text-orange-600 transition">
-                    Beranda
-                </a>
-
-                <a href="{{ route('produk.public') }}" class="hover:text-orange-600 transition">
-                    Produk
-                </a>
-
-                <a href="{{ route('bantuan') }}" class="text-orange-600">
-                    Bantuan
-                </a>
+            <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
+                <a href="{{ route('beranda') }}" class="transition hover:text-blue-900">Beranda</a>
+                <a href="{{ route('produk.public') }}" class="transition hover:text-blue-900">Produk</a>
+                <a href="{{ route('bantuan') }}" class="text-blue-950">Bantuan</a>
             </nav>
 
-            <div class="hidden md:flex items-center gap-3">
-                <a href="{{ route('login') }}" class="text-sm font-bold text-gray-600 hover:text-orange-600 transition">
+            <div class="hidden items-center gap-3 md:flex">
+                <a href="{{ route('login') }}" class="text-sm font-bold text-slate-600 transition hover:text-blue-900">
                     Login
                 </a>
 
                 @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-sm transition">
+                    <a href="{{ route('register') }}" class="btn-primary px-5 py-2.5 text-sm">
                         Daftar
                     </a>
                 @endif
             </div>
-
         </div>
     </header>
 
-    <!-- HERO -->
-    <section class="bg-white">
-        <div class="max-w-7xl mx-auto px-6 py-14">
-            <div class="bg-gradient-to-br from-orange-500 to-amber-500 rounded-[2rem] p-8 md:p-12 text-white relative overflow-hidden shadow-sm">
+    <main class="border-b border-slate-200 bg-slate-50">
+        <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+            <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-stretch">
+                <div class="panel p-8">
+                    <p class="text-xs font-bold uppercase tracking-[0.22em] text-blue-900">Pusat Bantuan</p>
+                    <h1 class="mt-3 max-w-2xl text-4xl font-black leading-tight text-slate-950">
+                        Ada kendala saat belanja?
+                    </h1>
+                    <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600">
+                        Temukan panduan penggunaan SABISHOP, mulai dari cara daftar akun, melihat produk,
+                        login, reset password, hingga melakukan pembelian.
+                    </p>
 
-                <div class="absolute -right-16 -top-16 w-56 h-56 bg-white/10 rounded-full"></div>
-                <div class="absolute right-10 bottom-0 text-9xl opacity-20 select-none">
-                    💬
+                    <div class="mt-8 grid gap-4 sm:grid-cols-3">
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <p class="text-sm font-extrabold text-slate-950">Cara Belanja</p>
+                            <p class="mt-1 text-xs text-slate-500">Alur pembelian yang ringkas.</p>
+                        </div>
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <p class="text-sm font-extrabold text-slate-950">Bantuan Akun</p>
+                            <p class="mt-1 text-xs text-slate-500">Login, daftar, dan reset password.</p>
+                        </div>
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <p class="text-sm font-extrabold text-slate-950">Pesanan</p>
+                            <p class="mt-1 text-xs text-slate-500">Pantau status checkout dan riwayat.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="relative z-10 max-w-2xl">
-                    <span class="inline-block bg-white/20 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider mb-5">
-                        Pusat Bantuan
-                    </span>
+                <div class="panel overflow-hidden">
+                    <img
+                        src="https://images.unsplash.com/photo-1556742031-c6961e8560b0?q=80&w=1200&auto=format&fit=crop"
+                        alt="Layanan bantuan belanja online"
+                        class="h-full min-h-[260px] w-full object-cover"
+                    >
+                </div>
+            </div>
+        </div>
+    </main>
 
-                    <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4">
-                        Ada kendala saat belanja?
-                    </h2>
-
-                    <p class="text-orange-50 leading-relaxed">
-                        Temukan panduan penggunaan SABISHOP, mulai dari cara daftar akun,
-                        melihat produk, login, reset password, hingga melakukan pembelian.
+    <section class="-mt-6">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="grid gap-5 md:grid-cols-3">
+                <div class="panel p-6">
+                    <h3 class="text-lg font-extrabold text-slate-950">Cara Belanja</h3>
+                    <p class="mt-2 text-sm leading-7 text-slate-500">
+                        Lihat produk, login akun, masukkan produk ke keranjang, lalu checkout pesanan.
                     </p>
                 </div>
 
+                <div class="panel p-6">
+                    <h3 class="text-lg font-extrabold text-slate-950">Bantuan Akun</h3>
+                    <p class="mt-2 text-sm leading-7 text-slate-500">
+                        Pelanggan dapat login, daftar akun baru, dan melakukan reset password jika lupa.
+                    </p>
+                </div>
+
+                <div class="panel p-6">
+                    <h3 class="text-lg font-extrabold text-slate-950">Pesanan</h3>
+                    <p class="mt-2 text-sm leading-7 text-slate-500">
+                        Setelah login, pelanggan dapat melihat keranjang dan riwayat pesanan.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- QUICK HELP -->
-    <section class="max-w-7xl mx-auto px-6 -mt-6 relative z-20">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-
-            <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-lg">
-                <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl mb-4">
-                    🛒
-                </div>
-                <h3 class="font-extrabold text-gray-900 text-lg">
-                    Cara Belanja
-                </h3>
-                <p class="text-sm text-gray-500 mt-2 leading-relaxed">
-                    Lihat produk, login akun, masukkan produk ke keranjang, lalu checkout pesanan.
-                </p>
-            </div>
-
-            <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-lg">
-                <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl mb-4">
-                    🔐
-                </div>
-                <h3 class="font-extrabold text-gray-900 text-lg">
-                    Bantuan Akun
-                </h3>
-                <p class="text-sm text-gray-500 mt-2 leading-relaxed">
-                    Pelanggan dapat login, daftar akun baru, dan melakukan reset password jika lupa.
-                </p>
-            </div>
-
-            <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-lg">
-                <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl mb-4">
-                    📦
-                </div>
-                <h3 class="font-extrabold text-gray-900 text-lg">
-                    Pesanan
-                </h3>
-                <p class="text-sm text-gray-500 mt-2 leading-relaxed">
-                    Setelah login, pelanggan dapat melihat keranjang dan riwayat pesanan.
-                </p>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- CONTENT -->
-    <main class="max-w-7xl mx-auto px-6 py-14">
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-
-            <!-- LEFT CONTENT -->
-            <section class="lg:col-span-2 space-y-8">
-
-                <!-- CARA BELANJA -->
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-7">
-                    <h2 class="text-2xl font-extrabold text-gray-900 mb-2">
-                        Cara Belanja di SABISHOP
-                    </h2>
-                    <p class="text-gray-500 text-sm mb-6">
+    <main class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+            <section class="space-y-8">
+                <div class="panel p-7">
+                    <h2 class="text-2xl font-black text-slate-950">Cara Belanja di SABISHOP</h2>
+                    <p class="mt-2 text-sm text-slate-500">
                         Ikuti langkah sederhana berikut untuk mulai membeli produk.
                     </p>
 
-                    <div class="space-y-5">
+                    <div class="mt-6 space-y-5">
                         <div class="flex gap-4">
-                            <div class="w-10 h-10 shrink-0 rounded-2xl bg-orange-500 text-white flex items-center justify-center font-extrabold">
-                                1
-                            </div>
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-950 text-sm font-black text-white">1</div>
                             <div>
-                                <h3 class="font-bold text-gray-900">Lihat katalog produk</h3>
-                                <p class="text-sm text-gray-500 mt-1">
+                                <h3 class="font-bold text-slate-950">Lihat katalog produk</h3>
+                                <p class="mt-1 text-sm leading-7 text-slate-500">
                                     Buka halaman produk untuk melihat daftar barang, harga, stok, dan deskripsi produk.
                                 </p>
                             </div>
                         </div>
 
                         <div class="flex gap-4">
-                            <div class="w-10 h-10 shrink-0 rounded-2xl bg-orange-500 text-white flex items-center justify-center font-extrabold">
-                                2
-                            </div>
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-950 text-sm font-black text-white">2</div>
                             <div>
-                                <h3 class="font-bold text-gray-900">Login atau daftar akun</h3>
-                                <p class="text-sm text-gray-500 mt-1">
+                                <h3 class="font-bold text-slate-950">Login atau daftar akun</h3>
+                                <p class="mt-1 text-sm leading-7 text-slate-500">
                                     Login diperlukan agar pelanggan dapat menambahkan produk ke keranjang dan melakukan checkout.
                                 </p>
                             </div>
                         </div>
 
                         <div class="flex gap-4">
-                            <div class="w-10 h-10 shrink-0 rounded-2xl bg-orange-500 text-white flex items-center justify-center font-extrabold">
-                                3
-                            </div>
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-950 text-sm font-black text-white">3</div>
                             <div>
-                                <h3 class="font-bold text-gray-900">Tambahkan produk ke keranjang</h3>
-                                <p class="text-sm text-gray-500 mt-1">
+                                <h3 class="font-bold text-slate-950">Tambahkan produk ke keranjang</h3>
+                                <p class="mt-1 text-sm leading-7 text-slate-500">
                                     Pilih produk yang tersedia, lalu masukkan ke keranjang belanja.
                                 </p>
                             </div>
                         </div>
 
                         <div class="flex gap-4">
-                            <div class="w-10 h-10 shrink-0 rounded-2xl bg-orange-500 text-white flex items-center justify-center font-extrabold">
-                                4
-                            </div>
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-950 text-sm font-black text-white">4</div>
                             <div>
-                                <h3 class="font-bold text-gray-900">Checkout dan pantau pesanan</h3>
-                                <p class="text-sm text-gray-500 mt-1">
+                                <h3 class="font-bold text-slate-950">Checkout dan pantau pesanan</h3>
+                                <p class="mt-1 text-sm leading-7 text-slate-500">
                                     Setelah checkout, pelanggan dapat melihat riwayat pesanan pada menu Pesanan Saya.
                                 </p>
                             </div>
@@ -197,175 +157,124 @@
                     </div>
                 </div>
 
-                <!-- FAQ -->
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-7">
-                    <h2 class="text-2xl font-extrabold text-gray-900 mb-2">
-                        Pertanyaan Umum
-                    </h2>
-                    <p class="text-gray-500 text-sm mb-6">
+                <div class="panel p-7">
+                    <h2 class="text-2xl font-black text-slate-950">Pertanyaan Umum</h2>
+                    <p class="mt-2 text-sm text-slate-500">
                         Beberapa pertanyaan yang sering diajukan pelanggan.
                     </p>
 
-                    <div class="space-y-3">
-
-                        <details class="group border border-gray-100 rounded-2xl p-5 bg-gray-50">
-                            <summary class="cursor-pointer font-bold text-gray-900 flex justify-between items-center">
+                    <div class="mt-6 space-y-3">
+                        <details class="group rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                            <summary class="flex cursor-pointer items-center justify-between font-bold text-slate-950">
                                 Apakah harus login untuk membeli produk?
-                                <span class="text-orange-500 group-open:rotate-180 transition">⌄</span>
+                                <span class="text-blue-900 transition group-open:rotate-180">⌄</span>
                             </summary>
-                            <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+                            <p class="mt-3 text-sm leading-7 text-slate-500">
                                 Ya. Pelanggan perlu login agar sistem dapat menyimpan keranjang, checkout, dan riwayat pesanan.
                             </p>
                         </details>
 
-                        <details class="group border border-gray-100 rounded-2xl p-5 bg-gray-50">
-                            <summary class="cursor-pointer font-bold text-gray-900 flex justify-between items-center">
+                        <details class="group rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                            <summary class="flex cursor-pointer items-center justify-between font-bold text-slate-950">
                                 Bagaimana jika lupa password?
-                                <span class="text-orange-500 group-open:rotate-180 transition">⌄</span>
+                                <span class="text-blue-900 transition group-open:rotate-180">⌄</span>
                             </summary>
-                            <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+                            <p class="mt-3 text-sm leading-7 text-slate-500">
                                 Klik menu Lupa Password pada halaman login, masukkan email terdaftar, lalu ikuti link reset password.
                             </p>
                         </details>
 
-                        <details class="group border border-gray-100 rounded-2xl p-5 bg-gray-50">
-                            <summary class="cursor-pointer font-bold text-gray-900 flex justify-between items-center">
-                                Apakah stok produk selalu tersedia?
-                                <span class="text-orange-500 group-open:rotate-180 transition">⌄</span>
-                            </summary>
-                            <p class="text-sm text-gray-500 mt-3 leading-relaxed">
-                                Stok produk mengikuti data yang dikelola admin. Jika stok habis, tombol pembelian akan dinonaktifkan.
-                            </p>
-                        </details>
-
-                        <details class="group border border-gray-100 rounded-2xl p-5 bg-gray-50">
-                            <summary class="cursor-pointer font-bold text-gray-900 flex justify-between items-center">
+                        <details class="group rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                            <summary class="flex cursor-pointer items-center justify-between font-bold text-slate-950">
                                 Bagaimana melihat pesanan saya?
-                                <span class="text-orange-500 group-open:rotate-180 transition">⌄</span>
+                                <span class="text-blue-900 transition group-open:rotate-180">⌄</span>
                             </summary>
-                            <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+                            <p class="mt-3 text-sm leading-7 text-slate-500">
                                 Setelah login, pelanggan dapat membuka menu Pesanan Saya untuk melihat riwayat pembelian.
                             </p>
                         </details>
 
-                        <details class="group border border-gray-100 rounded-2xl p-5 bg-gray-50">
-                            <summary class="cursor-pointer font-bold text-gray-900 flex justify-between items-center">
+                        <details class="group rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                            <summary class="flex cursor-pointer items-center justify-between font-bold text-slate-950">
                                 Bagaimana menghubungi admin?
-                                <span class="text-orange-500 group-open:rotate-180 transition">⌄</span>
+                                <span class="text-blue-900 transition group-open:rotate-180">⌄</span>
                             </summary>
-                            <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+                            <p class="mt-3 text-sm leading-7 text-slate-500">
                                 Pelanggan dapat menghubungi admin melalui tombol WhatsApp yang tersedia pada halaman bantuan ini.
                             </p>
                         </details>
-
                     </div>
                 </div>
-
             </section>
 
-            <!-- RIGHT SIDEBAR -->
             <aside class="space-y-6">
-
-                <!-- CONTACT CARD -->
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-7">
-                    <div class="w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-3xl mb-5">
-                        💬
-                    </div>
-
-                    <h2 class="text-xl font-extrabold text-gray-900">
-                        Butuh Bantuan Langsung?
-                    </h2>
-
-                    <p class="text-sm text-gray-500 mt-2 leading-relaxed">
-                        Hubungi admin jika mengalami kendala saat login, reset password, melihat produk, atau checkout pesanan.
+                <div class="panel p-6">
+                    <h3 class="text-lg font-extrabold text-slate-950">Butuh bantuan cepat?</h3>
+                    <p class="mt-2 text-sm leading-7 text-slate-500">
+                        Gunakan login atau daftar akun untuk mulai mengakses katalog, keranjang, dan riwayat pesanan.
                     </p>
 
-                    <a href="https://wa.me/6281234567890"
-                       target="_blank"
-                       class="block text-center mt-6 bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 rounded-2xl transition">
-                        Hubungi Admin
-                    </a>
-
-                    <p class="text-xs text-gray-400 mt-3 text-center">
-                        Ganti nomor WhatsApp pada kode sesuai nomor admin toko.
-                    </p>
-                </div>
-
-                <!-- INFO CARD -->
-                <div class="bg-gray-900 rounded-3xl p-7 text-white relative overflow-hidden">
-                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-orange-500/20 rounded-full"></div>
-
-                    <div class="relative z-10">
-                        <h2 class="text-xl font-extrabold">
-                            Jam Layanan
-                        </h2>
-
-                        <div class="mt-5 space-y-4 text-sm">
-                            <div class="flex justify-between gap-4 border-b border-white/10 pb-3">
-                                <span class="text-gray-300">Senin - Jumat</span>
-                                <span class="font-bold">08.00 - 17.00</span>
-                            </div>
-
-                            <div class="flex justify-between gap-4 border-b border-white/10 pb-3">
-                                <span class="text-gray-300">Sabtu</span>
-                                <span class="font-bold">08.00 - 14.00</span>
-                            </div>
-
-                            <div class="flex justify-between gap-4">
-                                <span class="text-gray-300">Minggu</span>
-                                <span class="font-bold">Libur</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ACTION CARD -->
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-7">
-                    <h2 class="text-xl font-extrabold text-gray-900">
-                        Mulai Belanja
-                    </h2>
-
-                    <p class="text-sm text-gray-500 mt-2">
-                        Lihat katalog produk atau masuk ke akun Anda untuk mulai membeli.
-                    </p>
-
-                    <div class="mt-6 space-y-3">
-                        <a href="{{ route('produk.public') }}"
-                           class="block text-center bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 rounded-2xl transition">
-                            Lihat Produk
+                    <div class="mt-5 flex flex-col gap-3 sm:flex-row lg:flex-col">
+                        <a href="{{ route('login') }}" class="btn-primary w-full">
+                            Login Sekarang
                         </a>
 
-                        <a href="{{ route('login') }}"
-                           class="block text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold py-3 rounded-2xl transition">
-                            Login Akun
-                        </a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="btn-secondary w-full">
+                                Daftar Akun
+                            </a>
+                        @endif
                     </div>
                 </div>
 
+                <div class="panel p-6">
+                    <h3 class="text-lg font-extrabold text-slate-950">Kontak</h3>
+                    <p class="mt-2 text-sm leading-7 text-slate-500">
+                        Tambahkan channel kontak toko Anda di sini jika sudah tersedia.
+                    </p>
+                </div>
             </aside>
-
         </div>
-
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-gray-900 text-white">
-        <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white text-xl">
-                    🛒
+    <footer class="border-t border-slate-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-3 lg:px-8">
+            <div>
+                <div class="flex items-center gap-3">
+                    <span class="brand-mark">SB</span>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-950">SABISHOP</h3>
+                        <p class="text-xs font-medium text-slate-500">Platform belanja online terpercaya</p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="font-extrabold">SABISHOP</h3>
-                    <p class="text-xs text-gray-400">Platform belanja online terpercaya</p>
-                </div>
+                <p class="mt-4 max-w-sm text-sm leading-7 text-slate-500">
+                    SABISHOP menyediakan pengalaman belanja online yang sederhana, aman, dan mudah digunakan.
+                </p>
             </div>
 
-            <p class="text-sm text-gray-400">
-                &copy; {{ date('Y') }} genjo. All Rights Reserved.
-            </p>
+            <div>
+                <h4 class="text-sm font-black uppercase tracking-[0.18em] text-slate-950">Menu</h4>
+                <ul class="mt-4 space-y-2 text-sm text-slate-500">
+                    <li><a href="{{ route('beranda') }}" class="transition hover:text-blue-900">Beranda</a></li>
+                    <li><a href="{{ route('produk.public') }}" class="transition hover:text-blue-900">Produk</a></li>
+                    <li><a href="{{ route('bantuan') }}" class="transition hover:text-blue-900">Bantuan</a></li>
+                    <li><a href="{{ route('login') }}" class="transition hover:text-blue-900">Login</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-black uppercase tracking-[0.18em] text-slate-950">Bantuan</h4>
+                <ul class="mt-4 space-y-2 text-sm text-slate-500">
+                    <li>Cara belanja</li>
+                    <li>Akun dan password</li>
+                    <li>Pesanan dan checkout</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-slate-200 py-5 text-center text-sm text-slate-400">
+            &copy; {{ date('Y') }} SABISHOP. All Rights Reserved.
         </div>
     </footer>
-
 </body>
 </html>

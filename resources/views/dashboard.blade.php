@@ -1,36 +1,4 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-sm">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white text-2xl shadow-sm">
-                        🛍️
-                    </div>
-
-                    <div>
-                        <h2 class="font-extrabold text-2xl text-gray-900 tracking-wide">
-                            SABISHOP
-                        </h2>
-                        <p class="text-sm text-gray-500">
-                            Belanja mudah, cepat, dan terpercaya
-                        </p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3">
-                     @if(auth()->user()->role === 'admin')
-                     <a href="{{ route('admin.dashboard') }}"
-                     class="inline-flex items-center justify-center rounded-xl bg-orange-500 hover:bg-orange-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition">
-                     🛠️ Panel Admin
-                </a>
-                     @endif
-                </div>
-
-            </div>
-        </div>
-    </x-slot>
-
     @php
         $categories = $categories ?? [
             'Fashion',
@@ -65,24 +33,16 @@
                 <!-- SIDEBAR -->
                 <aside class="lg:col-span-1">
                     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden sticky top-6">
-                        
-                        <div class="bg-gradient-to-br from-orange-500 to-amber-500 p-6 text-white relative overflow-hidden">
-                            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-white/15 rounded-full"></div>
-                            <div class="absolute right-8 top-8 text-6xl opacity-20 select-none">
-                                🛒
-                            </div>
-
-                            <div class="relative z-10">
-                                <p class="text-xs font-semibold uppercase tracking-wider text-orange-50 mb-2">
-                                    Selamat Datang
-                                </p>
-                                <h3 class="text-xl font-extrabold">
-                                    Katalog Belanja
-                                </h3>
-                                <p class="text-sm text-orange-50 mt-1">
-                                    Pilih produk terbaik untuk kebutuhan Anda.
-                                </p>
-                            </div>
+                        <div class="border-b border-slate-200 bg-blue-950 p-6 text-white">
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-blue-100">
+                                Selamat Datang
+                            </p>
+                            <h3 class="mt-2 text-xl font-extrabold">
+                                Katalog Belanja
+                            </h3>
+                            <p class="mt-2 text-sm text-blue-100">
+                                Pilih produk terbaik untuk kebutuhan Anda.
+                            </p>
                         </div>
 
                         <!-- MENU -->
@@ -93,19 +53,19 @@
 
                             <nav class="space-y-2">
                                 <a href="{{ route('dashboard') }}"
-                                   class="flex items-center gap-3 rounded-xl {{ empty($activeCategory) ? 'bg-orange-50 text-orange-700 border border-orange-100' : 'text-gray-600 hover:bg-orange-50 hover:text-orange-700' }} px-4 py-3 text-sm font-bold transition">
+                                   class="flex items-center gap-3 rounded-xl {{ empty($activeCategory) ? 'bg-blue-950 text-white' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-950' }} px-4 py-3 text-sm font-bold transition">
                                     <span class="text-lg">🏠</span>
                                     <span>Katalog Produk</span>
                                 </a>
 
                                 <a href="{{ route('cart.view') }}"
-                                   class="flex items-center gap-3 rounded-xl text-gray-600 hover:bg-orange-50 hover:text-orange-700 px-4 py-3 text-sm font-semibold transition">
+                                   class="flex items-center gap-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-950 px-4 py-3 text-sm font-semibold transition">
                                     <span class="text-lg">🛒</span>
                                     <span>Keranjang</span>
                                 </a>
 
                                 <a href="{{ route('orders.history') }}"
-                                   class="flex items-center gap-3 rounded-xl text-gray-600 hover:bg-orange-50 hover:text-orange-700 px-4 py-3 text-sm font-semibold transition">
+                                   class="flex items-center gap-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-950 px-4 py-3 text-sm font-semibold transition">
                                     <span class="text-lg">📦</span>
                                     <span>Pesanan Saya</span>
                                 </a>
@@ -121,7 +81,7 @@
                             <ul class="space-y-2">
                                 <li>
                                     <a href="{{ route('dashboard') }}"
-                                       class="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition {{ empty($activeCategory) ? 'bg-orange-50 text-orange-700' : 'text-gray-600 hover:bg-gray-50 hover:text-orange-600' }}">
+                                       class="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition {{ empty($activeCategory) ? 'bg-blue-950 text-white' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-950' }}">
                                         <span>🛍️</span>
                                         <span>Semua Kategori</span>
                                     </a>
@@ -130,7 +90,7 @@
                                 @foreach($categories as $cat)
                                     <li>
                                         <a href="{{ route('dashboard', ['category' => $cat, 'search' => $search ?? null]) }}"
-                                           class="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition {{ $activeCategory == $cat ? 'bg-orange-50 text-orange-700' : 'text-gray-600 hover:bg-gray-50 hover:text-orange-600' }}">
+                                           class="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition {{ $activeCategory == $cat ? 'bg-blue-950 text-white' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-950' }}">
                                             <span>{{ $categoryIcons[$cat] ?? '📦' }}</span>
                                             <span>{{ $cat }}</span>
                                         </a>
@@ -163,25 +123,47 @@
                 <main class="lg:col-span-3 space-y-6">
 
                     <!-- HERO -->
-                    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-orange-500 to-amber-500 p-8 text-white shadow-sm">
-                        <div class="absolute -right-12 -top-12 w-56 h-56 rounded-full bg-white/10"></div>
-                        <div class="absolute right-8 bottom-0 text-9xl opacity-20 select-none">
-                            🛍️
-                        </div>
+                    <section class="panel overflow-hidden">
+                        <div class="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
+                            <div class="p-8">
+                                <span class="inline-flex items-center rounded-full bg-blue-50 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-blue-900">
+                                    Promo Minggu Ini
+                                </span>
 
-                        <div class="relative z-10 max-w-2xl">
-                            <span class="inline-flex items-center rounded-full bg-white/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
-                                Promo Minggu Ini
-                            </span>
+                                <h1 class="mt-4 max-w-2xl text-3xl font-black leading-tight text-slate-950 md:text-4xl">
+                                    Belanja kebutuhan harian jadi lebih mudah
+                                </h1>
 
-                            <h1 class="mt-4 text-3xl md:text-4xl font-extrabold leading-tight">
-                                Belanja kebutuhan harian jadi lebih mudah
-                            </h1>
+                                <p class="mt-3 max-w-xl text-sm leading-7 text-slate-500 md:text-base">
+                                    Temukan produk pilihan dengan harga terbaik, stok tersedia,
+                                    dan proses belanja yang lebih praktis.
+                                </p>
 
-                            <p class="mt-3 text-sm md:text-base text-orange-50 max-w-xl">
-                                Temukan produk pilihan dengan harga terbaik, stok tersedia,
-                                dan proses belanja yang lebih praktis.
-                            </p>
+                                <div class="mt-6 grid grid-cols-3 gap-3">
+                                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                        <p class="text-sm font-extrabold text-slate-950">Lengkap</p>
+                                        <p class="mt-1 text-xs text-slate-500">Banyak pilihan produk.</p>
+                                    </div>
+
+                                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                        <p class="text-sm font-extrabold text-slate-950">Cepat</p>
+                                        <p class="mt-1 text-xs text-slate-500">Cari dan checkout mudah.</p>
+                                    </div>
+
+                                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                        <p class="text-sm font-extrabold text-slate-950">Aman</p>
+                                        <p class="mt-1 text-xs text-slate-500">Belanja lebih nyaman.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-100">
+                                <img
+                                    src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1200&auto=format&fit=crop"
+                                    alt="Belanja online"
+                                    class="h-full min-h-[280px] w-full object-cover"
+                                >
+                            </div>
                         </div>
                     </section>
 
@@ -198,13 +180,13 @@
                                     name="search"
                                     value="{{ $search ?? '' }}"
                                     placeholder="Cari nama produk di sini..."
-                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 py-3 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition"
+                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 py-3 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition"
                                 >
                             </div>
 
                             <select 
                                 name="category"
-                                class="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition"
+                                class="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition"
                             >
                                 <option value="">Semua Kategori</option>
 
@@ -217,13 +199,13 @@
 
                             <button 
                                 type="submit"
-                                class="rounded-2xl bg-orange-500 hover:bg-orange-600 px-7 py-3 text-sm font-bold text-white shadow-sm transition">
+                                class="btn-primary px-7 py-3">
                                 Cari
                             </button>
 
                             @if(!empty($search) || !empty($activeCategory))
                                 <a href="{{ route('dashboard') }}"
-                                   class="rounded-2xl bg-gray-100 hover:bg-gray-200 px-6 py-3 text-sm font-bold text-gray-600 transition text-center">
+                                   class="btn-secondary px-6 py-3 text-sm text-center">
                                     Reset
                                 </a>
                             @endif
@@ -294,12 +276,12 @@
                                             class="w-full h-48 object-cover hover:scale-105 transition duration-500"
                                         >
 
-                                        <span class="absolute top-3 left-3 rounded-full bg-white/90 text-orange-700 px-3 py-1 text-[11px] font-bold shadow-sm">
+                                        <span class="absolute top-3 left-3 rounded-full bg-white/90 text-blue-700 px-3 py-1 text-[11px] font-bold shadow-sm">
                                             {{ $product->category ?? 'Lainnya' }}
                                         </span>
 
                                         @if($product->stock <= 5 && $product->stock > 0)
-                                            <span class="absolute top-3 right-3 rounded-full bg-amber-500 px-3 py-1 text-[11px] font-bold text-white shadow-sm">
+                                            <span class="absolute top-3 right-3 rounded-full bg-sky-500 px-3 py-1 text-[11px] font-bold text-white shadow-sm">
                                                 Stok Menipis
                                             </span>
                                         @endif
@@ -314,11 +296,11 @@
                                     <!-- DETAIL -->
                                     <div class="p-5 flex flex-col flex-grow">
                                         <div class="flex-grow">
-                                            <h3 class="font-extrabold text-gray-900 text-base hover:text-orange-600 transition">
+                                            <h3 class="font-extrabold text-gray-900 text-base hover:text-blue-600 transition">
                                                 {{ $product->name }}
                                             </h3>
 
-                                            <span class="inline-flex mt-2 bg-orange-50 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">
+                                            <span class="inline-flex mt-2 bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
                                                 {{ $product->category ?? 'Belum ada kategori' }}
                                             </span>
 
@@ -333,7 +315,7 @@
                                                     <p class="text-xs text-gray-400 mb-1">
                                                         Harga
                                                     </p>
-                                                    <p class="text-xl font-extrabold text-orange-600">
+                                                    <p class="text-xl font-extrabold text-blue-600">
                                                         Rp {{ number_format((float) $product->price, 0, ',', '.') }}
                                                     </p>
                                                 </div>
@@ -375,14 +357,13 @@
                 value="1"
                 min="1"
                 max="{{ $product->stock }}"
-                class="w-24 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-center text-sm font-bold text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-200 outline-none"
+                class="w-24 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-center text-sm font-bold text-gray-700 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none"
             >
         </div>
 
         <button 
             type="submit"
-            class="w-full rounded-2xl px-4 py-3 text-sm font-extrabold text-white shadow-sm transition bg-orange-500 hover:bg-orange-600"
-        >
+            class="btn-primary w-full px-4 py-3 text-sm">
             🛒 Tambah ke Keranjang
         </button>
     @endif

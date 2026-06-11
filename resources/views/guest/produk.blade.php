@@ -7,315 +7,272 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-50 text-slate-800">
+    @php
+        $categories = $categories ?? [
+            'Fashion',
+            'Aksesoris',
+            'Elektronik',
+            'Peralatan Rumah',
+            'Sembako',
+            'Makanan & Minuman',
+            'Kecantikan',
+            'Lainnya',
+        ];
 
-    <!-- NAVBAR -->
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        $activeCategory = $category ?? request('category');
+        $searchValue = $search ?? request('search');
+    @endphp
 
+    <header class="sticky top-0 z-50 border-b border-slate-200 border-t-4 border-t-blue-950 bg-white/95 backdrop-blur">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
             <a href="{{ route('beranda') }}" class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-orange-500 flex items-center justify-center text-white text-xl shadow-sm">
-                    🛒
-                </div>
-
-                <div>
-                    <h1 class="text-xl font-extrabold text-gray-900 tracking-wide">
-                        SABISHOP
-                    </h1>
-                    <p class="text-xs text-gray-500">
-                        Platform belanja online terpercaya
-                    </p>
-                </div>
+                <span class="brand-mark">SB</span>
+                <span class="hidden sm:block">
+                    <span class="block text-sm font-black tracking-wide text-slate-950">SABISHOP</span>
+                    <span class="block text-xs font-medium text-slate-500">Platform belanja online terpercaya</span>
+                </span>
             </a>
 
-            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-600">
-                <a href="{{ route('beranda') }}" class="hover:text-orange-600 transition">
-                    Beranda
-                </a>
-
-                <a href="{{ route('produk.public') }}" class="text-orange-600">
-                    Produk
-                </a>
-
-                <a href="{{ route('bantuan') }}" class="hover:text-orange-600 transition">
-                    Bantuan
-                </a>
+            <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
+                <a href="{{ route('beranda') }}" class="transition hover:text-blue-900">Beranda</a>
+                <a href="{{ route('produk.public') }}" class="text-blue-950">Produk</a>
+                <a href="{{ route('bantuan') }}" class="transition hover:text-blue-900">Bantuan</a>
             </nav>
 
-            <div class="hidden md:flex items-center gap-3">
-                <a href="{{ route('login') }}" class="text-sm font-bold text-gray-600 hover:text-orange-600 transition">
+            <div class="hidden items-center gap-3 md:flex">
+                <a href="{{ route('login') }}" class="text-sm font-bold text-slate-600 transition hover:text-blue-900">
                     Login
                 </a>
 
                 @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-sm transition">
+                    <a href="{{ route('register') }}" class="btn-primary px-5 py-2.5 text-sm">
                         Daftar
                     </a>
                 @endif
             </div>
-
         </div>
     </header>
 
-    <!-- HERO PRODUK -->
-    <section class="bg-white">
-        <div class="max-w-7xl mx-auto px-6 py-14">
-            <div class="bg-gradient-to-br from-orange-500 to-amber-500 rounded-[2rem] p-8 md:p-12 text-white relative overflow-hidden shadow-sm">
-                
-                <div class="absolute -right-16 -top-16 w-56 h-56 bg-white/10 rounded-full"></div>
-                <div class="absolute right-10 bottom-0 text-9xl opacity-20 select-none">
-                    🛍️
-                </div>
-
-                <div class="relative z-10 max-w-2xl">
-                    <span class="inline-block bg-white/20 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider mb-5">
-                        Katalog Produk
-                    </span>
-
-                    <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4">
-                        Temukan produk terbaik untuk kebutuhan Anda
-                    </h2>
-
-                    <p class="text-orange-50 leading-relaxed">
-                        Lihat daftar produk yang tersedia di SABISHOP. Untuk membeli produk,
-                        silakan login terlebih dahulu ke akun Anda.
+    <main class="border-b border-slate-200 bg-slate-50">
+        <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+            <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch">
+                <div class="panel p-8">
+                    <p class="text-xs font-bold uppercase tracking-[0.22em] text-blue-900">Katalog Produk</p>
+                    <h1 class="mt-3 max-w-2xl text-4xl font-black leading-tight text-slate-950">
+                        Temukan produk terbaik untuk kebutuhan Anda.
+                    </h1>
+                    <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600">
+                        Lihat daftar produk yang tersedia di SABISHOP dan gunakan filter untuk menemukan
+                        kategori yang paling relevan.
                     </p>
+
+                    <div class="mt-8 grid gap-3 sm:grid-cols-3">
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <p class="text-sm font-extrabold text-slate-950">Lengkap</p>
+                            <p class="mt-1 text-xs text-slate-500">Produk tersusun rapi per kategori.</p>
+                        </div>
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <p class="text-sm font-extrabold text-slate-950">Cepat Dicari</p>
+                            <p class="mt-1 text-xs text-slate-500">Gunakan pencarian dan filter.</p>
+                        </div>
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <p class="text-sm font-extrabold text-slate-950">Profesional</p>
+                            <p class="mt-1 text-xs text-slate-500">Tampilan belanja yang bersih.</p>
+                        </div>
+                    </div>
                 </div>
 
+                <div class="panel overflow-hidden">
+                    <img
+                        src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
+                        alt="Produk dan kemasan belanja"
+                        class="h-full min-h-[260px] w-full object-cover"
+                    >
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="-mt-6">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="panel p-4">
+                <form action="{{ route('produk.public') }}" method="GET" class="grid gap-3 md:grid-cols-[1fr_220px_auto]">
+                    <label class="relative block">
+                        <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">🔍</span>
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ $searchValue ?? '' }}"
+                            placeholder="Cari nama produk..."
+                            class="form-field w-full border-slate-200 bg-slate-50 py-3 pl-11 pr-4"
+                        >
+                    </label>
+
+                    <select
+                        name="category"
+                        class="form-field w-full border-slate-200 bg-slate-50 px-4 py-3"
+                    >
+                        <option value="">Semua Kategori</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat }}" {{ ($activeCategory ?? '') == $cat ? 'selected' : '' }}>
+                                {{ $cat }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <button type="submit" class="btn-primary px-7 py-3">
+                        Cari
+                    </button>
+                </form>
+
+                @if(!empty($searchValue) || !empty($activeCategory))
+                    <div class="mt-4 space-y-1 text-sm text-slate-500">
+                        @if(!empty($searchValue))
+                            <p>
+                                Menampilkan hasil pencarian untuk:
+                                <strong class="text-slate-900">"{{ $searchValue }}"</strong>
+                            </p>
+                        @endif
+
+                        @if(!empty($activeCategory))
+                            <p>
+                                Kategori:
+                                <strong class="text-slate-900">{{ $activeCategory }}</strong>
+                            </p>
+                        @endif
+
+                        <a href="{{ route('produk.public') }}" class="inline-flex text-sm font-bold text-blue-900 transition hover:text-blue-950">
+                            Reset filter
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
     </section>
 
-    <!-- SEARCH -->
-    <!-- SEARCH & FILTER -->
-<section class="max-w-7xl mx-auto px-6 -mt-6 relative z-20">
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-lg p-5">
-        <form action="{{ route('produk.public') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-3">
-
-            <!-- SEARCH INPUT -->
-            <div class="relative md:col-span-7">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                    🔍
-                </span>
-
-                <input 
-                    type="text"
-                    name="search"
-                    value="{{ $search ?? '' }}"
-                    placeholder="Cari nama produk..."
-                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 py-3 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition"
-                >
-            </div>
-
-            <!-- CATEGORY DROPDOWN -->
-            <div class="md:col-span-3">
-                <select 
-                    name="category"
-                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition cursor-pointer"
-                >
-                    <option value="">Semua Kategori</option>
-
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat }}" {{ ($category ?? '') == $cat ? 'selected' : '' }}>
-                            {{ $cat }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- BUTTON -->
-            <div class="md:col-span-2">
-                <button 
-                    type="submit"
-                    class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold px-7 py-3 rounded-2xl transition">
-                    Cari
-                </button>
-            </div>
-
-        </form>
-
-        @if(!empty($search) || !empty($category))
-            <div class="text-sm text-gray-500 mt-4 space-y-1">
-                @if(!empty($search))
-                    <p>
-                        Menampilkan hasil pencarian untuk:
-                        <strong class="text-gray-900">"{{ $search }}"</strong>
-                    </p>
-                @endif
-
-                @if(!empty($category))
-                    <p>
-                        Kategori:
-                        <strong class="text-gray-900">{{ $category }}</strong>
-                    </p>
-                @endif
-
-                <a href="{{ route('produk.public') }}"
-                   class="inline-block mt-2 text-orange-600 hover:text-orange-700 font-bold">
-                    Reset filter
-                </a>
-            </div>
-        @endif
-    </div>
-</section>
-
-    <!-- PRODUCT LIST -->
-    <main class="max-w-7xl mx-auto px-6 py-12">
-
-        <div class="flex items-end justify-between mb-8">
+    <main class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="mb-8 flex items-end justify-between gap-4">
             <div>
-                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">
-                    Semua Produk
-                </h2>
-                <p class="text-gray-500 mt-2">
-                    Produk yang tersedia berdasarkan data dari admin.
-                </p>
+                <h2 class="text-2xl font-black text-slate-950 sm:text-3xl">Semua Produk</h2>
+                <p class="mt-2 text-sm text-slate-500">Produk yang tersedia berdasarkan data dari admin.</p>
             </div>
         </div>
 
         @if($products->isEmpty())
-            <div class="bg-white border border-gray-100 rounded-3xl py-16 text-center shadow-sm">
-                <div class="text-5xl mb-4">🛒</div>
-                <h3 class="text-lg font-extrabold text-gray-900">
-                    Produk tidak ditemukan
-                </h3>
-                <p class="text-gray-500 mt-2">
+            <div class="panel py-16 text-center">
+                <h3 class="text-lg font-extrabold text-slate-950">Produk tidak ditemukan</h3>
+                <p class="mt-2 text-sm text-slate-500">
                     Belum ada produk yang tersedia atau kata kunci pencarian tidak cocok.
                 </p>
             </div>
         @else
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @foreach($products as $product)
-                    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col">
-
-                        <!-- IMAGE -->
-                        <div class="relative bg-gray-100 overflow-hidden">
-                            <img 
-                                <img src="{{ $product->image_url ? asset($product->image_url) : 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=500&auto=format&fit=crop' }}"
+                    <div class="panel flex flex-col overflow-hidden">
+                        <div class="relative bg-slate-100">
+                            <img
+                                src="{{ $product->image_url ? asset($product->image_url) : 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=900&auto=format&fit=crop' }}"
                                 alt="{{ $product->name }}"
-                                class="w-full h-48 object-cover hover:scale-105 transition duration-500"
+                                class="h-48 w-full object-cover"
                             >
 
                             @if($product->stock <= 5 && $product->stock > 0)
-                                <span class="absolute top-3 right-3 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                <span class="absolute right-3 top-3 rounded-full bg-blue-950 px-3 py-1 text-[11px] font-bold text-white shadow-sm">
                                     Stok Menipis
                                 </span>
                             @endif
 
                             @if($product->stock < 1)
-                                <span class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                <span class="absolute right-3 top-3 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-bold text-white shadow-sm">
                                     Stok Habis
                                 </span>
                             @endif
                         </div>
 
-                        <!-- DETAIL -->
-                        <div class="p-5 flex flex-col flex-grow">
-                            <div class="flex-grow">
-                                <h3 class="font-extrabold text-gray-900 text-lg line-clamp-1">
+                        <div class="flex flex-1 flex-col p-5">
+                            <div class="flex-1">
+                                <h3 class="line-clamp-1 text-lg font-extrabold text-slate-950">
                                     {{ $product->name }}
                                 </h3>
-                                
-                                <span class="inline-flex mt-2 bg-orange-50 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">
-    {{ $product->category ?? 'Lainnya' }}
-</span>
 
-                                <p class="text-gray-500 text-sm mt-2 leading-relaxed min-h-[42px] line-clamp-2">
+                                <span class="mt-2 inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-900">
+                                    {{ $product->category ?? 'Lainnya' }}
+                                </span>
+
+                                <p class="mt-3 line-clamp-2 min-h-[44px] text-sm leading-relaxed text-slate-500">
                                     {{ $product->description ?? 'Tidak ada deskripsi produk.' }}
                                 </p>
                             </div>
 
-                            <div class="mt-5">
-                                <div class="flex items-end justify-between gap-3 mb-4">
-                                    <div>
-                                        <p class="text-xs text-gray-400 mb-1">
-                                            Harga
-                                        </p>
-
-                                        <p class="text-xl font-extrabold text-orange-600">
-                                            Rp {{ number_format($product->price, 0, ',', '.') }}
-                                        </p>
-                                    </div>
-
-                                    <div class="text-right">
-                                        <p class="text-xs text-gray-400 mb-1">
-                                            Stok
-                                        </p>
-
-                                        <p class="text-sm font-bold text-gray-700">
-                                            {{ $product->stock }}
-                                        </p>
-                                    </div>
+                            <div class="mt-5 flex items-end justify-between gap-3">
+                                <div>
+                                    <p class="text-xs text-slate-400">Harga</p>
+                                    <p class="text-xl font-black text-blue-950">
+                                        Rp {{ number_format((float) $product->price, 0, ',', '.') }}
+                                    </p>
                                 </div>
 
-                                @if($product->stock < 1)
-                                    <button disabled class="w-full bg-gray-300 text-white font-bold py-3 rounded-2xl cursor-not-allowed">
-                                        Stok Habis
-                                    </button>
-                                @else
-                                    <a href="{{ route('login') }}"
-                                       class="block text-center w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-2xl transition">
-                                        Login untuk Membeli
-                                    </a>
-                                @endif
+                                <div class="text-right">
+                                    <p class="text-xs text-slate-400">Stok</p>
+                                    <p class="text-sm font-bold text-slate-700">{{ $product->stock }}</p>
+                                </div>
                             </div>
-                        </div>
 
+                            @if($product->stock < 1)
+                                <button disabled class="mt-5 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-extrabold text-slate-400">
+                                    Stok Habis
+                                </button>
+                            @else
+                                <a href="{{ route('login') }}" class="mt-5 w-full rounded-xl bg-blue-950 px-4 py-3 text-center text-sm font-extrabold text-white transition hover:bg-blue-900">
+                                    Login untuk Membeli
+                                </a>
+                            @endif
+                        </div>
                     </div>
                 @endforeach
             </div>
-
-            <!-- PAGINATION -->
-            <div class="mt-10">
-                {{ $products->links() }}
-            </div>
         @endif
-
     </main>
 
-    <!-- CTA -->
-    <section class="bg-white py-14">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="bg-gray-900 rounded-[2rem] p-10 md:p-12 text-white text-center relative overflow-hidden">
-                <div class="absolute -top-16 -right-16 w-52 h-52 bg-orange-500/20 rounded-full"></div>
-                <div class="absolute -bottom-16 -left-16 w-52 h-52 bg-orange-500/20 rounded-full"></div>
-
-                <div class="relative z-10 max-w-2xl mx-auto">
-                    <h2 class="text-3xl md:text-4xl font-extrabold mb-4">
-                        Ingin membeli produk?
-                    </h2>
-
-                    <p class="text-gray-300 mb-8">
-                        Login ke akun Anda untuk menambahkan produk ke keranjang dan melakukan checkout.
-                    </p>
-
-                    <a href="{{ route('login') }}"
-                       class="inline-block bg-orange-500 hover:bg-orange-600 text-white font-extrabold px-8 py-3 rounded-xl transition">
-                        Login Sekarang
-                    </a>
+    <footer class="border-t border-slate-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-3 lg:px-8">
+            <div>
+                <div class="flex items-center gap-3">
+                    <span class="brand-mark">SB</span>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-950">SABISHOP</h3>
+                        <p class="text-xs font-medium text-slate-500">Platform belanja online terpercaya</p>
+                    </div>
                 </div>
+                <p class="mt-4 max-w-sm text-sm leading-7 text-slate-500">
+                    SABISHOP menyediakan pengalaman belanja online yang sederhana, aman, dan mudah digunakan.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-black uppercase tracking-[0.18em] text-slate-950">Menu</h4>
+                <ul class="mt-4 space-y-2 text-sm text-slate-500">
+                    <li><a href="{{ route('beranda') }}" class="transition hover:text-blue-900">Beranda</a></li>
+                    <li><a href="{{ route('produk.public') }}" class="transition hover:text-blue-900">Produk</a></li>
+                    <li><a href="{{ route('bantuan') }}" class="transition hover:text-blue-900">Bantuan</a></li>
+                    <li><a href="{{ route('login') }}" class="transition hover:text-blue-900">Login</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-black uppercase tracking-[0.18em] text-slate-950">Kategori</h4>
+                <ul class="mt-4 space-y-2 text-sm text-slate-500">
+                    @foreach($categories as $cat)
+                        <li>{{ $cat }}</li>
+                    @endforeach
+                </ul>
             </div>
         </div>
-    </section>
 
-    <!-- FOOTER -->
-    <footer class="bg-gray-900 text-white">
-        <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white text-xl">
-                    🛒
-                </div>
-                <div>
-                    <h3 class="font-extrabold">SABISHOP</h3>
-                    <p class="text-xs text-gray-400">Platform belanja online terpercaya</p>
-                </div>
-            </div>
-
-            <p class="text-sm text-gray-400">
-                &copy; {{ date('Y') }} genjo. All Rights Reserved.
-            </p>
+        <div class="border-t border-slate-200 py-5 text-center text-sm text-slate-400">
+            &copy; {{ date('Y') }} SABISHOP. All Rights Reserved.
         </div>
     </footer>
-
 </body>
 </html>
