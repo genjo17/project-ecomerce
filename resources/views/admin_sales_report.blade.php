@@ -23,7 +23,8 @@
                     <a href="{{ route('admin.reports.export', [
                             'start_date' => $startDate,
                             'end_date' => $endDate,
-                            'status' => $status
+                            'status' => $status,
+                            'payment_status' => $paymentStatus
                         ]) }}"
                        class="btn-primary inline-flex items-center justify-center px-5 py-3 text-sm">
                         ⬇️ Export CSV
@@ -67,8 +68,44 @@
                                 class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                             <option value="">Semua Status</option>
                             @foreach($statuses as $item)
+                                @php
+                                    $statusLabel = match ($item) {
+                                        'Pesanan diterima' => 'Menunggu diproses',
+                                        'Sedang diproses' => 'Diproses',
+                                        'Sedang dikirim' => 'Dikirim',
+                                        'Sampai tujuan' => 'Sudah sampai',
+                                        'Pesanan selesai' => 'Selesai',
+                                        default => $item,
+                                    };
+                                @endphp
                                 <option value="{{ $item }}" {{ $status == $item ? 'selected' : '' }}>
-                                    {{ $item }}
+                                    {{ $statusLabel }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Status Pembayaran
+                        </label>
+                        <select name="payment_status"
+                                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+                            <option value="">Semua Pembayaran</option>
+                            @foreach($paymentStatuses as $item)
+                                @php
+                                    $paymentLabel = match ($item) {
+                                        'Menunggu Pembayaran' => 'Menunggu Pembayaran',
+                                        'Menunggu Verifikasi' => 'Menunggu Verifikasi',
+                                        'Dibayar' => 'Dibayar',
+                                        'Ditolak' => 'Ditolak',
+                                        'Bayar Saat Diterima' => 'Bayar Saat Diterima',
+                                        'Refund' => 'Refund',
+                                        default => $item,
+                                    };
+                                @endphp
+                                <option value="{{ $item }}" {{ $paymentStatus == $item ? 'selected' : '' }}>
+                                    {{ $paymentLabel }}
                                 </option>
                             @endforeach
                         </select>
@@ -89,7 +126,7 @@
             </div>
 
             <!-- SUMMARY CARDS -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
                 <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
                     <div class="w-12 h-12 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center text-2xl mb-4">
                         💰
@@ -127,6 +164,16 @@
                     <p class="text-sm text-gray-500">Pesanan Selesai</p>
                     <h3 class="text-3xl font-extrabold text-gray-900 mt-1">
                         {{ $pesananSelesai }}
+                    </h3>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+                    <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl mb-4">
+                        💳
+                    </div>
+                    <p class="text-sm text-gray-500">Menunggu Pembayaran</p>
+                    <h3 class="text-3xl font-extrabold text-gray-900 mt-1">
+                        {{ (int) ($orders->where('payment_status', 'Menunggu Pembayaran')->count()) }}
                     </h3>
                 </div>
             </div>
@@ -214,6 +261,7 @@
                                         <th class="text-left px-6 py-4 font-bold">Pembeli</th>
                                         <th class="text-left px-6 py-4 font-bold">Tanggal</th>
                                         <th class="text-left px-6 py-4 font-bold">Status</th>
+                                        <th class="text-left px-6 py-4 font-bold">Pembayaran</th>
                                         <th class="text-right px-6 py-4 font-bold">Ongkir</th>
                                         <th class="text-right px-6 py-4 font-bold">Total</th>
                                     </tr>
@@ -231,8 +279,34 @@
                                                 {{ \Carbon\Carbon::parse($order->created_at)->format('d M Y H:i') }}
                                             </td>
                                             <td class="px-6 py-4">
+                                                @php
+                                                    $statusLabel = match ($order->status) {
+                                                        'Pesanan diterima' => 'Menunggu diproses',
+                                                        'Sedang diproses' => 'Diproses',
+                                                        'Sedang dikirim' => 'Dikirim',
+                                                        'Sampai tujuan' => 'Sudah sampai',
+                                                        'Pesanan selesai' => 'Selesai',
+                                                        default => $order->status,
+                                                    };
+                                                @endphp
                                                 <span class="inline-flex bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
-                                                    {{ $order->status }}
+                                                    {{ $statusLabel }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                @php
+                                                    $paymentLabel = match ($order->payment_status ?? null) {
+                                                        'Menunggu Pembayaran' => 'Menunggu Pembayaran',
+                                                        'Menunggu Verifikasi' => 'Menunggu Verifikasi',
+                                                        'Dibayar' => 'Dibayar',
+                                                        'Ditolak' => 'Ditolak',
+                                                        'Bayar Saat Diterima' => 'Bayar Saat Diterima',
+                                                        'Refund' => 'Refund',
+                                                        default => $order->payment_status ?? '-',
+                                                    };
+                                                @endphp
+                                                <span class="inline-flex bg-orange-50 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">
+                                                    {{ $paymentLabel }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-right font-bold text-gray-600">
@@ -244,7 +318,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                                                 Belum ada transaksi pada periode ini.
                                             </td>
                                         </tr>
@@ -270,10 +344,20 @@
 
                         <div class="space-y-3">
                             @forelse($statusSummary as $row)
+                                @php
+                                    $statusLabel = match ($row->status) {
+                                        'Pesanan diterima' => 'Menunggu diproses',
+                                        'Sedang diproses' => 'Diproses',
+                                        'Sedang dikirim' => 'Dikirim',
+                                        'Sampai tujuan' => 'Sudah sampai',
+                                        'Pesanan selesai' => 'Selesai',
+                                        default => $row->status,
+                                    };
+                                @endphp
                                 <div class="flex items-center justify-between border border-gray-100 rounded-2xl px-4 py-3">
                                     <div>
                                         <p class="font-bold text-gray-800">
-                                            {{ $row->status }}
+                                            {{ $statusLabel }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ $row->total_orders }} pesanan
@@ -286,6 +370,48 @@
                             @empty
                                 <div class="text-center py-8 text-gray-500">
                                     Belum ada data status.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+                        <h3 class="text-xl font-extrabold text-gray-900 mb-2">
+                            Rekap Status Pembayaran
+                        </h3>
+                        <p class="text-sm text-gray-500 mb-5">
+                            Jumlah pesanan berdasarkan status pembayaran.
+                        </p>
+
+                        <div class="space-y-3">
+                            @forelse($paymentStatusSummary as $row)
+                                @php
+                                    $paymentLabel = match ($row->payment_status) {
+                                        'Menunggu Pembayaran' => 'Menunggu Pembayaran',
+                                        'Menunggu Verifikasi' => 'Menunggu Verifikasi',
+                                        'Dibayar' => 'Dibayar',
+                                        'Ditolak' => 'Ditolak',
+                                        'Bayar Saat Diterima' => 'Bayar Saat Diterima',
+                                        'Refund' => 'Refund',
+                                        default => $row->payment_status ?? '-',
+                                    };
+                                @endphp
+                                <div class="flex items-center justify-between border border-gray-100 rounded-2xl px-4 py-3">
+                                    <div>
+                                        <p class="font-bold text-gray-800">
+                                            {{ $paymentLabel }}
+                                        </p>
+                                        <p class="text-xs text-gray-500">
+                                            {{ $row->total_orders }} pesanan
+                                        </p>
+                                    </div>
+                                    <p class="font-extrabold text-orange-600">
+                                        Rp {{ number_format((float) $row->total_sales, 0, ',', '.') }}
+                                    </p>
+                                </div>
+                            @empty
+                                <div class="text-center py-8 text-gray-500">
+                                    Belum ada data pembayaran.
                                 </div>
                             @endforelse
                         </div>

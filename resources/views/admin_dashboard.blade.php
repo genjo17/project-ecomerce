@@ -10,7 +10,7 @@
                         Kelola Toko SABISHOP
                     </h2>
                     <p class="text-sm text-gray-500 mt-1">
-                        Atur produk, kategori, stok, pesanan, dan status pengiriman toko.
+                        Atur produk, kategori, stok, dan pantau ringkasan pesanan toko.
                     </p>
                 </div>
                 <a href="{{ route('admin.reports') }}"
@@ -38,11 +38,11 @@
             'Lainnya',
         ];
 
-        $totalProduk = $products->count();
-        $stokMenipis = $products->where('stock', '<=', 5)->where('stock', '>', 0)->count();
-        $stokHabis = $products->where('stock', '<=', 0)->count();
-        $totalPesanan = $orders->count();
-        $totalOmzet = $orders->sum('total_price');
+        $produkAktif = $products->reject(fn ($product) => method_exists($product, 'trashed') && $product->trashed());
+        $totalProduk = $produkAktif->count();
+        $produkNonaktif = $products->count() - $totalProduk;
+        $stokMenipis = $produkAktif->where('stock', '<=', 5)->where('stock', '>', 0)->count();
+        $stokHabis = $produkAktif->where('stock', '<=', 0)->count();
     @endphp
 
     <div class="min-h-screen bg-gray-50 py-8">
@@ -77,7 +77,7 @@
                     <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mb-4">
                         📦
                     </div>
-                    <p class="text-sm text-gray-500">Total Produk</p>
+                    <p class="text-sm text-gray-500">Produk Aktif</p>
                     <h3 class="text-3xl font-extrabold text-gray-900 mt-1">
                         {{ $totalProduk }}
                     </h3>
@@ -97,9 +97,9 @@
                     <div class="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-2xl mb-4">
                         ❌
                     </div>
-                    <p class="text-sm text-gray-500">Stok Habis</p>
+                    <p class="text-sm text-gray-500">Produk Nonaktif</p>
                     <h3 class="text-3xl font-extrabold text-gray-900 mt-1">
-                        {{ $stokHabis }}
+                        {{ $produkNonaktif }}
                     </h3>
                 </div>
 
@@ -246,18 +246,19 @@
                                     Kelola Produk
                                 </h3>
                                 <p class="text-sm text-gray-500 mt-1">
-                                    Update stok, edit detail produk, atau hapus produk dari katalog.
+                                    Update stok, edit detail produk, atau nonaktifkan produk dari katalog.
                                 </p>
                             </div>
 
                             <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-bold px-4 py-2 rounded-full">
-                                {{ $totalProduk }} produk
+                                {{ $totalProduk }} aktif
                             </span>
                         </div>
 
                         <div class="divide-y divide-gray-100">
                             @forelse($products as $p)
                                 @php
+                                    $isInactive = method_exists($p, 'trashed') && $p->trashed();
                                     $imageSrc = 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=500&auto=format&fit=crop';
 
                                     if (!empty($p->image_url)) {
@@ -267,7 +268,7 @@
                                     }
                                 @endphp
 
-                                <div class="p-5">
+                                <div class="p-5 {{ $isInactive ? 'bg-gray-50/70' : '' }}">
 
                                     <!-- BARIS UTAMA PRODUK -->
                                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -305,6 +306,16 @@
                                                         Stok Aman
                                                     </span>
                                                 @endif
+
+                                                @if($isInactive)
+                                                    <span class="inline-flex mt-2 bg-gray-200 text-gray-700 text-xs font-bold px-3 py-1 rounded-full">
+                                                        Nonaktif
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex mt-2 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full">
+                                                        Tampil di Katalog
+                                                    </span>
+                                                @endif
                                             </div>
                                         </div>
 
@@ -326,16 +337,28 @@
                                                 </button>
                                             </form>
 
-                                            <form action="{{ route('admin.product.delete', $p->id) }}" method="POST"
-                                                  onsubmit="return confirm('Yakin ingin menghapus produk ini? Produk yang dihapus tidak akan tampil lagi di katalog.');">
-                                                @csrf
-                                                @method('DELETE')
+                                            @if($isInactive)
+                                                <form action="{{ route('admin.product.restore', $p->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
 
-                                                <button type="submit"
-                                                        class="bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 text-sm font-bold rounded-xl transition">
-                                                    Hapus
-                                                </button>
-                                            </form>
+                                                    <button type="submit"
+                                                            class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 text-sm font-bold rounded-xl transition">
+                                                        Aktifkan
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <form action="{{ route('admin.product.delete', $p->id) }}" method="POST"
+                                                      onsubmit="return confirm('Nonaktifkan produk ini dari katalog? Riwayat pesanan tetap aman.');">
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <button type="submit"
+                                                            class="bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 text-sm font-bold rounded-xl transition">
+                                                        Nonaktifkan
+                                                    </button>
+                                                </form>
+                                            @endif
 
                                         </div>
                                     </div>
@@ -462,21 +485,31 @@
                         <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                             <div>
                                 <h3 class="text-xl font-extrabold text-gray-900">
-                                    Kelola Pesanan & Tracking
+                                    Pesanan Terbaru
                                 </h3>
                                 <p class="text-sm text-gray-500 mt-1">
-                                    Pantau pesanan pelanggan dan ubah status pengiriman.
+                                    Lihat ringkasan pesanan terbaru dan buka halaman khusus untuk kelola penuh.
                                 </p>
                             </div>
 
-                            <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-bold px-4 py-2 rounded-full">
-                                {{ $totalPesanan }} pesanan
-                            </span>
+                            <a href="{{ route('admin.orders.index') }}"
+                               class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-bold px-4 py-2 rounded-full">
+                                Kelola Semua Pesanan
+                            </a>
                         </div>
 
                         <div class="p-6 space-y-4">
-                            @forelse($orders as $o)
+                            @forelse($recentOrders as $o)
                                 @php
+                                    $statusLabel = match ($o->status) {
+                                        'Pesanan diterima' => 'Menunggu diproses',
+                                        'Sedang diproses' => 'Diproses',
+                                        'Sedang dikirim' => 'Dikirim',
+                                        'Sampai tujuan' => 'Sudah sampai',
+                                        'Pesanan selesai' => 'Selesai',
+                                        default => $o->status,
+                                    };
+
                                     $statusClass = 'bg-gray-100 text-gray-700';
 
                                     if ($o->status == 'Pesanan diterima') {
@@ -487,11 +520,13 @@
                                         $statusClass = 'bg-blue-100 text-blue-700';
                                     } elseif ($o->status == 'Sampai tujuan') {
                                         $statusClass = 'bg-green-100 text-green-700';
+                                    } elseif ($o->status == 'Pesanan selesai') {
+                                        $statusClass = 'bg-emerald-100 text-emerald-700';
                                     }
                                 @endphp
 
                                 <div class="border border-gray-100 rounded-3xl p-5 bg-gray-50">
-                                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
+                                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                                         <div>
                                             <div class="flex items-center gap-2 mb-2">
                                                 <h4 class="font-extrabold text-gray-900">
@@ -499,7 +534,7 @@
                                                 </h4>
 
                                                 <span class="inline-flex {{ $statusClass }} text-xs font-bold px-3 py-1 rounded-full">
-                                                    {{ $o->status }}
+                                                    {{ $statusLabel }}
                                                 </span>
                                             </div>
 
@@ -509,69 +544,27 @@
                                                     {{ $o->buyer_name }}
                                                 </span>
                                             </p>
+                                            <p class="mt-1 text-xs text-gray-400">
+                                                {{ \Carbon\Carbon::parse($o->created_at)->format('d M Y, H:i') }}
+                                            </p>
                                         </div>
 
-                                        <div class="md:text-right">
-                                            <p class="text-xs text-gray-400">
-                                                Total Pembayaran
-                                            </p>
-                                            <p class="text-xl font-extrabold text-blue-600">
-                                                Rp {{ number_format((float) $o->total_price, 0, ',', '.') }}
-                                            </p>
-                                            <p class="mt-1 text-xs text-gray-500">
-                                                Ongkir Rp {{ number_format((float) ($o->shipping_cost ?? 0), 0, ',', '.') }}
-                                                @if(($o->payment_fee ?? 0) > 0)
-                                                    + biaya bayar Rp {{ number_format((float) $o->payment_fee, 0, ',', '.') }}
-                                                @endif
-                                            </p>
+                                        <div class="md:text-right flex flex-col gap-3 md:items-end">
+                                            <div>
+                                                <p class="text-xs text-gray-400">
+                                                    Total Pembayaran
+                                                </p>
+                                                <p class="text-xl font-extrabold text-blue-600">
+                                                    Rp {{ number_format((float) $o->total_price, 0, ',', '.') }}
+                                                </p>
+                                            </div>
+
+                                            <a href="{{ route('admin.orders.show', $o->id) }}"
+                                               class="btn-secondary px-4 py-2 text-sm">
+                                                Detail Pesanan
+                                            </a>
                                         </div>
                                     </div>
-
-                                    <div class="mb-5 grid gap-3 rounded-2xl bg-white p-4 text-sm md:grid-cols-3">
-                                        <div>
-                                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Penerima</p>
-                                            <p class="mt-1 font-bold text-gray-800">{{ $o->receiver_name ?? '-' }}</p>
-                                            <p class="text-gray-500">{{ $o->phone ?? '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Pengiriman</p>
-                                            <p class="mt-1 font-bold text-gray-800">{{ $o->shipping_method ?? '-' }}</p>
-                                            <p class="text-gray-500">{{ $o->payment_method ?? '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Alamat</p>
-                                            <p class="mt-1 line-clamp-2 text-gray-600">{{ $o->address ?? '-' }}</p>
-                                        </div>
-                                    </div>
-
-                                    <form action="{{ route('admin.order.status', $o->id) }}" method="POST" class="flex flex-col md:flex-row md:items-center gap-3">
-                                        @csrf
-
-                                        <label class="text-sm font-semibold text-gray-700">
-                                            Ubah Status:
-                                        </label>
-
-                                        <select name="status"
-                                                class="flex-grow rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-                                            <option value="Pesanan diterima" {{ $o->status == 'Pesanan diterima' ? 'selected' : '' }}>
-                                                Pesanan diterima
-                                            </option>
-                                            <option value="Sedang diproses" {{ $o->status == 'Sedang diproses' ? 'selected' : '' }}>
-                                                Sedang diproses
-                                            </option>
-                                            <option value="Sedang dikirim" {{ $o->status == 'Sedang dikirim' ? 'selected' : '' }}>
-                                                Sedang dikirim
-                                            </option>
-                                            <option value="Sampai tujuan" {{ $o->status == 'Sampai tujuan' ? 'selected' : '' }}>
-                                                Sampai tujuan
-                                            </option>
-                                        </select>
-
-                                        <button type="submit"
-                                                class="btn-primary px-5 py-2.5 text-sm">
-                                            Update Status
-                                        </button>
-                                    </form>
                                 </div>
                             @empty
                                 <div class="py-12 text-center">
@@ -580,7 +573,7 @@
                                         Belum ada pesanan
                                     </h4>
                                     <p class="text-sm text-gray-500 mt-2">
-                                        Pesanan pelanggan akan tampil di bagian ini setelah checkout.
+                                        Pesanan terbaru akan tampil di sini setelah checkout.
                                     </p>
                                 </div>
                             @endforelse

@@ -82,7 +82,7 @@
                     </p>
 
                     <a href="{{ $catalogRoute }}"
-                       class="btn-primary px-8 py-4">
+                       class="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-extrabold shadow-sm transition">
                         Mulai Belanja
                     </a>
                 </div>
@@ -283,11 +283,11 @@
 
                                                                     <input type="hidden" name="action" value="decrease">
 
-                                                                    <button type="submit"
-                                                                            @disabled($itemQty <= 1)
-                                                                            aria-label="Kurangi jumlah {{ $itemName }}"
-                                                                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-transparent bg-white text-lg font-black text-gray-700 transition hover:border-blue-950 hover:bg-blue-50 hover:text-blue-950 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300">
-                                                                        -
+                                                                <button type="submit"
+                                                                        @disabled($itemQty <= 1)
+                                                                        aria-label="Kurangi jumlah {{ $itemName }}"
+                                                                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-transparent bg-blue-600 text-lg font-black text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-200">
+                                                                    -
                                                                     </button>
                                                                 </form>
 
@@ -301,11 +301,11 @@
 
                                                                     <input type="hidden" name="action" value="increase">
 
-                                                                    <button type="submit"
-                                                                            @disabled(!is_null($itemStock) && $itemQty >= $itemStock)
-                                                                            aria-label="Tambah jumlah {{ $itemName }}"
-                                                                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-transparent bg-blue-950 text-lg font-black text-white transition hover:bg-blue-900 disabled:cursor-not-allowed disabled:bg-gray-300">
-                                                                        +
+                                                                <button type="submit"
+                                                                        @disabled(!is_null($itemStock) && $itemQty >= $itemStock)
+                                                                        aria-label="Tambah jumlah {{ $itemName }}"
+                                                                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-transparent bg-blue-600 text-lg font-black text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300">
+                                                                    +
                                                                     </button>
                                                                 </form>
                                                             </div>
@@ -326,7 +326,7 @@
                                                                 @method('DELETE')
 
                                                                 <button type="submit"
-                                                                        class="text-sm font-bold text-red-500 hover:text-red-700 transition">
+                                                                        class="inline-flex items-center justify-center rounded-xl border border-blue-100 bg-white px-4 py-2 text-sm font-extrabold text-blue-950 transition hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-100">
                                                                     Hapus Produk
                                                                 </button>
                                                             </form>
@@ -635,12 +635,12 @@
 
                             <button type="submit"
                                     form="checkoutForm"
-                                    class="btn-primary mt-6 w-full py-4 px-5">
+                                    class="mt-6 w-full rounded-2xl bg-blue-950 hover:bg-blue-900 text-white font-extrabold py-4 px-5 shadow-sm transition focus:outline-none focus:ring-4 focus:ring-blue-100">
                                 Buat Pesanan
                             </button>
 
                             <a href="{{ $catalogRoute }}"
-                               class="btn-secondary mt-4 w-full inline-flex justify-center items-center py-4 px-5">
+                               class="mt-4 w-full inline-flex justify-center items-center rounded-2xl border border-blue-100 bg-white text-blue-950 font-extrabold py-4 px-5 transition hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-100">
                                 Kembali ke Katalog
                             </a>
                         </div>
