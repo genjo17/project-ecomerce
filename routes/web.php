@@ -72,17 +72,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cart', [ShopController::class, 'viewCart'])->name('cart.view');
     Route::post('/checkout', [ShopController::class, 'checkout'])->name('checkout');
     Route::get('/orders', [ShopController::class, 'orderHistory'])->name('orders.history');
+    Route::get('/orders/{id}/invoice', [ShopController::class, 'invoice'])->name('orders.invoice');
+    Route::get('/orders/{id}/invoice/download', [ShopController::class, 'downloadInvoice'])->name('orders.invoice.download');
+    Route::post('/orders/{id}/payment-proof', [ShopController::class, 'uploadPaymentProof'])->name('orders.payment-proof');
+    Route::patch('/orders/{id}/confirm-received', [ShopController::class, 'confirmReceived'])->name('orders.confirm-received');
     Route::patch('/cart/{id}/update', [ShopController::class, 'updateCart'])->name('cart.update');
      Route::delete('/cart/{id}/remove', [ShopController::class, 'removeFromCart'])->name('cart.remove');
 
     // MODUL ADMIN
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/orders', [AdminController::class, 'ordersIndex'])->name('orders.index');
+        Route::get('/orders/{id}', [AdminController::class, 'orderShow'])->name('orders.show');
         Route::post('/product/store', [AdminController::class, 'storeProduct'])->name('product.store');
         Route::post('/product/update-stock/{id}', [AdminController::class, 'updateStock'])->name('product.stock');
-        Route::post('/order/update-status/{id}', [AdminController::class, 'updateStatus'])->name('order.status');
+        Route::patch('/orders/{id}/shipping', [AdminController::class, 'updateShipment'])->name('order.shipping');
+        Route::patch('/orders/{id}/status', [AdminController::class, 'updateStatus'])->name('order.status');
+        Route::patch('/orders/{id}/payment-status', [AdminController::class, 'updatePaymentStatus'])->name('order.payment-status');
         Route::put('/product/update/{id}', [AdminController::class, 'updateProduct'])->name('product.update');
         Route::delete('/product/delete/{id}', [AdminController::class, 'deleteProduct'])->name('product.delete');
+        Route::patch('/product/restore/{id}', [AdminController::class, 'restoreProduct'])->name('product.restore');
         Route::get('/reports', [AdminController::class, 'salesReport'])->name('reports');
         Route::get('/reports/export', [AdminController::class, 'exportSalesReport'])->name('reports.export');
     });

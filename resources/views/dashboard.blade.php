@@ -374,6 +374,10 @@
                                 </div>
                             @endforeach
                         </div>
+
+                        <div class="mt-6">
+                            {{ $products->links() }}
+                        </div>
                     @endif
 
                 </main>

@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\UserAddress;
+use App\Services\OrderNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class ShopController extends Controller
 {
@@ -63,6 +66,43 @@ class ShopController extends Controller
         ];
     }
 
+    private function orderQuery()
+    {
+        return DB::table('orders')
+            ->join('users', 'orders.user_id', '=', 'users.id')
+            ->select('orders.*', 'users.name as buyer_name', 'users.email as buyer_email');
+    }
+
+    private function orderWithItems(int $orderId)
+    {
+        $query = $this->orderQuery()->where('orders.id', $orderId);
+
+        if (Auth::user()?->role !== 'admin') {
+            $query->where('orders.user_id', Auth::id());
+        }
+
+        $order = $query->first();
+
+        if (!$order) {
+            return null;
+        }
+
+        $items = DB::table('order_items')
+            ->leftJoin('products', 'order_items.product_id', '=', 'products.id')
+            ->where('order_items.order_id', $orderId)
+            ->select(
+                'order_items.*',
+                DB::raw('COALESCE(order_items.product_name, products.name, "Produk dihapus") as product_name'),
+                DB::raw('COALESCE(order_items.product_image, products.image_url) as product_image')
+            )
+            ->orderBy('order_items.id')
+            ->get();
+
+        $order->items = $items;
+
+        return $order;
+    }
+
     // Katalog Produk dengan Fitur Pencarian Freetext
     public function catalog(Request $request)
 {
@@ -91,7 +131,8 @@ class ShopController extends Controller
             $query->where('category', $category);
         })
         ->latest()
-        ->get();
+        ->paginate(9)
+        ->withQueryString();
 
     return view('dashboard', compact('products', 'search', 'category', 'categories'));
 }
@@ -99,7 +140,10 @@ class ShopController extends Controller
     // Masuk Keranjang Belanja
     public function addToCart(Request $request, $id)
 {
-    $product = DB::table('products')->where('id', $id)->first();
+    $product = DB::table('products')
+        ->where('id', $id)
+        ->whereNull('deleted_at')
+        ->first();
 
     if (!$product) {
         return back()->with('error', 'Produk tidak ditemukan!');
@@ -153,6 +197,7 @@ public function viewCart()
     $items = DB::table('carts')
         ->join('products', 'carts.product_id', '=', 'products.id')
         ->where('carts.user_id', Auth::id())
+        ->whereNull('products.deleted_at')
         ->select(
             'carts.*',
             'products.name',
@@ -187,6 +232,7 @@ public function updateCart(Request $request, $id)
 
     $product = DB::table('products')
         ->where('id', $cart->product_id)
+        ->whereNull('deleted_at')
         ->first();
 
     if (!$product) {
@@ -243,9 +289,12 @@ public function removeFromCart($id)
     return back()->with('success', 'Produk berhasil dihapus dari keranjang.');
 }
     // Proses Checkout
-    public function checkout(Request $request) {
+    public function checkout(Request $request)
+    {
         $items = DB::table('carts')->where('user_id', Auth::id())->get();
-        if($items->isEmpty()) return back()->with('error', 'Keranjang kosong');
+        if ($items->isEmpty()) {
+            return back()->with('error', 'Keranjang kosong');
+        }
 
         $request->validate([
             'shipping_address_id' => [
@@ -263,26 +312,10 @@ public function removeFromCart($id)
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $totalPrice = 0;
-        foreach ($items as $item) {
-            $product = DB::table('products')->where('id', $item->product_id)->first();
-
-            if (!$product) {
-                return back()->with('error', 'Ada produk yang tidak ditemukan.');
-            }
-
-            if ($item->quantity > $product->stock) {
-                return back()->with('error', 'Stok produk "' . $product->name . '" tidak mencukupi.');
-            }
-
-            $totalPrice += ($product->price * $item->quantity);
-        }
-
         $shippingOption = $this->shippingOptions()[$request->shipping_method];
         $paymentOption = $this->paymentOptions()[$request->payment_method];
         $shippingCost = (int) $shippingOption['cost'];
         $paymentFee = (int) $paymentOption['fee'];
-        $grandTotal = $totalPrice + $shippingCost + $paymentFee;
         $selectedAddress = null;
 
         if ($request->filled('shipping_address_id')) {
@@ -296,52 +329,234 @@ public function removeFromCart($id)
         $shippingAddress = $selectedAddress?->address_line ?? $request->address;
         $addressLabel = $selectedAddress?->label;
 
-        DB::transaction(function () use ($items, $totalPrice, $shippingCost, $paymentFee, $grandTotal, $shippingOption, $paymentOption, $selectedAddress, $receiverName, $phone, $shippingAddress, $addressLabel, $request) {
-            foreach ($items as $item) {
-                DB::table('products')
-                    ->where('id', $item->product_id)
-                    ->decrement('stock', $item->quantity);
-            }
+        $orderId = null;
 
-            $orderId = DB::table('orders')->insertGetId([
-                'user_id' => Auth::id(),
-                'subtotal_price' => $totalPrice,
-                'shipping_cost' => $shippingCost,
-                'payment_fee' => $paymentFee,
-                'total_price' => $grandTotal,
-                'shipping_address_id' => $selectedAddress?->id,
-                'address_label' => $addressLabel,
-                'receiver_name' => $receiverName,
-                'phone' => $phone,
-                'shipping_method' => $shippingOption['label'],
-                'payment_method' => $paymentOption['label'],
-                'address' => $shippingAddress,
-                'notes' => $request->notes,
-                'status' => 'Pesanan diterima',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        try {
+            DB::transaction(function () use ($items, $shippingCost, $paymentFee, $shippingOption, $paymentOption, $selectedAddress, $receiverName, $phone, $shippingAddress, $addressLabel, $request) {
+                $products = [];
+                $totalPrice = 0;
 
-            foreach ($items as $item) {
-                $product = DB::table('products')->where('id', $item->product_id)->first();
-                DB::table('order_items')->insert([
-                    'order_id' => $orderId,
-                    'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'price' => $product->price,
+                foreach ($items as $item) {
+                    $product = DB::table('products')
+                        ->where('id', $item->product_id)
+                        ->whereNull('deleted_at')
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$product) {
+                        throw ValidationException::withMessages([
+                            'cart' => 'Ada produk yang tidak ditemukan.',
+                        ]);
+                    }
+
+                    if ($item->quantity > $product->stock) {
+                        throw ValidationException::withMessages([
+                            'cart' => 'Stok produk "' . $product->name . '" tidak mencukupi.',
+                        ]);
+                    }
+
+                    $products[$item->product_id] = $product;
+                    $totalPrice += ($product->price * $item->quantity);
+                }
+
+                $grandTotal = $totalPrice + $shippingCost + $paymentFee;
+
+                foreach ($items as $item) {
+                    $updated = DB::table('products')
+                        ->where('id', $item->product_id)
+                        ->whereNull('deleted_at')
+                        ->where('stock', '>=', $item->quantity)
+                        ->decrement('stock', $item->quantity);
+
+                    if ($updated === 0) {
+                        $product = $products[$item->product_id];
+
+                        throw ValidationException::withMessages([
+                            'cart' => 'Stok produk "' . $product->name . '" baru saja habis. Silakan cek keranjang lagi.',
+                        ]);
+                    }
+                }
+
+                $orderId = DB::table('orders')->insertGetId([
+                    'user_id' => Auth::id(),
+                    'subtotal_price' => $totalPrice,
+                    'shipping_cost' => $shippingCost,
+                    'payment_fee' => $paymentFee,
+                    'total_price' => $grandTotal,
+                    'shipping_address_id' => $selectedAddress?->id,
+                    'address_label' => $addressLabel,
+                    'receiver_name' => $receiverName,
+                    'phone' => $phone,
+                    'shipping_method' => $shippingOption['label'],
+                    'payment_method' => $paymentOption['label'],
+                    'payment_status' => $request->payment_method === 'cod' ? 'Bayar Saat Diterima' : 'Menunggu Pembayaran',
+                    'address' => $shippingAddress,
+                    'notes' => $request->notes,
+                    'status' => 'Pesanan diterima',
                     'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
-            }
 
-            DB::table('carts')->where('user_id', Auth::id())->delete();
-        });
+                foreach ($items as $item) {
+                    $product = $products[$item->product_id];
+
+                    DB::table('order_items')->insert([
+                        'order_id' => $orderId,
+                        'product_id' => $item->product_id,
+                        'product_name' => $product->name,
+                        'product_image' => $product->image_url,
+                        'quantity' => $item->quantity,
+                        'price' => $product->price,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+
+                DB::table('carts')->where('user_id', Auth::id())->delete();
+
+                $orderId = $orderId ?? null;
+            });
+        } catch (ValidationException $exception) {
+            $message = collect($exception->errors())->flatten()->first() ?? 'Checkout gagal. Silakan coba lagi.';
+
+            return back()->with('error', $message);
+        }
+
+        $latestOrder = DB::table('orders')
+            ->where('user_id', Auth::id())
+            ->orderByDesc('id')
+            ->first();
+
+        if ($latestOrder) {
+            app(OrderNotificationService::class)->notifyCreated((int) $latestOrder->id);
+        }
 
         return redirect()->route('orders.history')->with('success', 'Checkout Berhasil!');
     }
 
     // Riwayat Pesanan & Tracking Status
-    public function orderHistory() {
-        $orders = DB::table('orders')->where('user_id', Auth::id())->orderBy('id', 'desc')->get();
+    public function orderHistory()
+    {
+        $orders = $this->orderQuery()
+            ->where('orders.user_id', Auth::id())
+            ->orderBy('orders.id', 'desc')
+            ->get();
+
+        $orderIds = $orders->pluck('id')->all();
+        $itemsByOrder = collect();
+
+        if (!empty($orderIds)) {
+            $itemsByOrder = DB::table('order_items')
+                ->leftJoin('products', 'order_items.product_id', '=', 'products.id')
+                ->whereIn('order_items.order_id', $orderIds)
+                ->select(
+                    'order_items.order_id',
+                    'order_items.quantity',
+                    'order_items.price',
+                    'order_items.product_name as snapshot_name',
+                    'order_items.product_image as snapshot_image',
+                    DB::raw('COALESCE(order_items.product_name, products.name, "Produk dihapus") as product_name'),
+                    DB::raw('COALESCE(order_items.product_image, products.image_url) as product_image')
+                )
+                ->orderBy('order_items.id')
+                ->get()
+                ->groupBy('order_id');
+        }
+
+        $orders->transform(function ($order) use ($itemsByOrder) {
+            $order->items = $itemsByOrder->get($order->id, collect());
+            return $order;
+        });
+
         return view('orders_history', compact('orders'));
+    }
+
+    public function uploadPaymentProof(Request $request, $id)
+    {
+        $order = DB::table('orders')
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$order) {
+            return back()->with('error', 'Pesanan tidak ditemukan.');
+        }
+
+        $request->validate([
+            'payment_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:4096'],
+        ]);
+
+        $path = $request->file('payment_proof')->store('payment-proofs', 'public');
+
+        DB::table('orders')
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->update([
+                'payment_proof_path' => 'storage/' . $path,
+                'payment_proof_uploaded_at' => now(),
+                'payment_status' => 'Menunggu Verifikasi',
+                'payment_rejected_reason' => null,
+                'updated_at' => now(),
+            ]);
+
+        app(OrderNotificationService::class)->notifyPaymentProofUploaded((int) $id);
+
+        return back()->with('success', 'Bukti pembayaran berhasil diunggah.');
+    }
+
+    public function invoice($id)
+    {
+        $order = $this->orderWithItems((int) $id);
+
+        if (!$order) {
+            abort(404);
+        }
+
+        return view('order_invoice', compact('order'));
+    }
+
+    public function downloadInvoice($id)
+    {
+        $order = $this->orderWithItems((int) $id);
+
+        if (!$order) {
+            abort(404);
+        }
+
+        $html = view('order_invoice', compact('order'))->render();
+        $fileName = 'invoice-order-' . $order->id . '.html';
+
+        return response($html, 200, [
+            'Content-Type' => 'text/html; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+
+    public function confirmReceived($id)
+    {
+        $order = DB::table('orders')
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$order) {
+            return back()->with('error', 'Pesanan tidak ditemukan.');
+        }
+
+        if ($order->status !== 'Sampai tujuan') {
+            return back()->with('error', 'Pesanan hanya bisa dikonfirmasi setelah sampai tujuan.');
+        }
+
+        DB::table('orders')
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->update([
+                'status' => 'Pesanan selesai',
+                'updated_at' => now(),
+            ]);
+
+        app(OrderNotificationService::class)->notifyCompleted((int) $id);
+
+        return back()->with('success', 'Pesanan berhasil dikonfirmasi diterima.');
     }
 }

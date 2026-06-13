@@ -50,7 +50,7 @@ return new class extends Migration {
         
         // Tambah kolom role di tabel users bawaan Breeze
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('buyer'); // admin atau buyer
+            $table->string('role')->default('customer'); // admin atau customer
         });
     }
 
